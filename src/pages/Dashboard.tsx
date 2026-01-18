@@ -1,0 +1,71 @@
+import { useState } from "react";
+import { Button } from "../components/ui/Button";
+import { Download, RefreshCw, Sparkles } from "lucide-react";
+import { StatsCards } from "../components/dashboard/StatsCards";
+import { ContributionHeatmap } from "../components/charts/ContributionHeatmap";
+import { TopLanguages } from "../components/charts/TopLanguages";
+import { TopRepos } from "../components/dashboard/TopRepos";
+import { DeveloperScore } from "../components/dashboard/DeveloperScore";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import { AIInsightsModal } from "../components/modals/AIInsightsModal";
+
+export default function Dashboard() {
+    const [showAI, setShowAI] = useState(false);
+
+    return (
+        <div className="space-y-6">
+            <AIInsightsModal isOpen={showAI} onClose={() => setShowAI(false)} />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <p className="text-slate-500 dark:text-slate-400">Welcome back, here's your activity overview.</p>
+                </div>
+                <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setShowAI(true)}>
+                        <Sparkles className="mr-2 h-4 w-4 text-purple-500" />
+                        AI Insights
+                    </Button>
+                    <Button variant="outline" size="sm">
+                        <Download className="mr-2 h-4 w-4" />
+                        Export
+                    </Button>
+                    <Button size="sm">
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Sync Data
+                    </Button>
+                </div>
+            </div>
+
+            {/* Stats Cards */}
+            <StatsCards />
+
+            {/* Main Content Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                {/* Heatmap Card */}
+                <Card className="col-span-7 lg:col-span-5">
+                    <CardHeader>
+                        <CardTitle className="text-sm font-medium">Contribution Activity</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ContributionHeatmap />
+                    </CardContent>
+                </Card>
+
+                {/* Developer Score */}
+                <div className="col-span-7 lg:col-span-2">
+                    <DeveloperScore />
+                </div>
+
+                {/* Top Repos */}
+                <div className="col-span-7 lg:col-span-4">
+                    <TopRepos />
+                </div>
+
+                {/* Top Languages */}
+                <div className="col-span-7 lg:col-span-3">
+                    <TopLanguages />
+                </div>
+            </div>
+        </div>
+    );
+}
