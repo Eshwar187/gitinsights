@@ -45,12 +45,7 @@ export const loginByUsername = asyncHandler(async (req, res) => {
             .single();
 
         // Generate JWT token
-        const token = generateToken({
-            id: user.id,
-            email: user.email,
-            github_username: username,
-            subscription_tier: subscription?.plan?.name || 'free'
-        });
+        const token = generateToken(user.id);
 
         logger.info(`User logged in by username: ${username}`);
 

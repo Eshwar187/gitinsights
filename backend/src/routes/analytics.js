@@ -8,17 +8,18 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
-// Developer scores
+// Simplified routes (auto-detect user's GitHub account)
+router.get('/scores', analyticsController.getUserScores);
+router.get('/languages', analyticsController.getUserLanguageStats);
+router.get('/heatmap', analyticsController.getUserHeatmap);
+router.get('/badges', analyticsController.getUserBadges);
+router.get('/ai-insights', checkFeatureAccess('ai_insights'), analyticsController.getUserAIInsights);
+
+// Account-specific routes (original)
 router.get('/accounts/:accountId/scores', analyticsController.getDeveloperScores);
 router.post('/accounts/:accountId/scores/recalculate', analyticsController.recalculateScores);
-
-// Contribution heatmap
 router.get('/accounts/:accountId/heatmap', analyticsController.getHeatmap);
-
-// Language statistics
 router.get('/accounts/:accountId/languages', analyticsController.getLanguageStats);
-
-// Badges
 router.get('/accounts/:accountId/badges', analyticsController.getBadges);
 
 // AI Insights (requires subscription)

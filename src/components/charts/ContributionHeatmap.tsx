@@ -1,19 +1,48 @@
 import { cn } from "../../utils/cn";
-import { eachDayOfInterval, subDays, format } from "date-fns";
+import { eachDayOfInterval, subDays, format, parseISO } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
+import { getHeatmap } from "../../services/activityService";
+import LoadingSpinner from "../LoadingSpinner";
 
 export function ContributionHeatmap() {
     const today = new Date();
     const startDate = subDays(today, 364);
+
+    const { data: heatmapData, isLoading } = useQuery({
+        queryKey: ['activityHeatmap'],
+        queryFn: () => getHeatmap(format(startDate, 'yyyy-MM-dd'), format(today, 'yyyy-MM-dd'))
+    });
+
     const days = eachDayOfInterval({ start: startDate, end: today });
 
-    // Mock data generation
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-32">
+                <LoadingSpinner size="sm" />
+            </div>
+        );
+    }
+
+    // Create a map of dates to contribution counts
+    const contributionMap = new Map();
+    let totalContributions = 0;
+
+    if (heatmapData?.success && heatmapData.data) {
+        heatmapData.data.forEach((item: any) => {
+            const dateStr = format(parseISO(item.date), 'yyyy-MM-dd');
+            contributionMap.set(dateStr, item.count);
+            totalContributions += item.count;
+        });
+    }
+
+    // Map days to contribution data
     const data = days.map((day) => {
-        // Bias towards more activity
-        const activity = Math.random() > 0.7 ? Math.floor(Math.random() * 10) + 1 : 0;
+        const dateStr = format(day, 'yyyy-MM-dd');
+        const count = contributionMap.get(dateStr) || 0;
         return {
             date: day,
-            count: activity,
-            level: activity === 0 ? 0 : activity < 3 ? 1 : activity < 6 ? 2 : activity < 9 ? 3 : 4,
+            count,
+            level: count === 0 ? 0 : count < 3 ? 1 : count < 6 ? 2 : count < 9 ? 3 : 4,
         };
     });
 
@@ -31,7 +60,9 @@ export function ContributionHeatmap() {
     return (
         <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-                <h3 className="font-semibold">3,245 contributions in the last year</h3>
+                <h3 className="font-semibold">
+                    {totalContributions.toLocaleString()} contributions in the last year
+                </h3>
                 <div className="text-xs text-slate-500">
                     Less <span className="inline-block w-3 h-3 bg-slate-100 dark:bg-slate-800 sm:ml-1 rounded-sm" />
                     <span className="inline-block w-3 h-3 bg-green-200 dark:bg-green-900 ml-1 rounded-sm" />

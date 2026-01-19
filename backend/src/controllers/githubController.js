@@ -6,6 +6,53 @@ import { encrypt } from '../utils/encryption.js';
 import logger from '../utils/logger.js';
 
 /**
+ * Helper: Get user's primary GitHub account
+ */
+async function getUserGitHubAccount(userId) {
+    const { data: account, error } = await supabaseAdmin
+        .from('github_accounts')
+        .select('*')
+        .eq('user_id', userId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .single();
+
+    if (error || !account) {
+        throw new NotFoundError('No GitHub account connected. Please connect your GitHub account first.');
+    }
+
+    return account;
+}
+
+/**
+ * Get repositories for logged-in user
+ */
+export const getUserRepositories = asyncHandler(async (req, res) => {
+    const account = await getUserGitHubAccount(req.user.id);
+    const { page = 1, limit = 20, sort = 'stars_count' } = req.query;
+
+    const offset = (page - 1) * limit;
+
+    const { data: repositories, error, count } = await supabaseAdmin
+        .from('repositories')
+        .select('*', { count: 'exact' })
+        .eq('github_account_id', account.id)
+        .is('deleted_at', null)
+        .order(sort, { ascending: false })
+        .range(offset, offset + limit - 1);
+
+    if (error) {
+        throw new Error('Failed to fetch repositories');
+    }
+
+    res.json({
+        success: true,
+        data: repositories || []
+    });
+});
+
+/**
  * Connect GitHub account
  */
 export const connectAccount = asyncHandler(async (req, res) => {

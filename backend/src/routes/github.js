@@ -9,6 +9,9 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticate);
 
+// Simplified routes (auto-detect user's GitHub account)
+router.get('/repositories', paginationValidation, githubController.getUserRepositories);
+
 // GitHub account management
 router.get('/accounts', githubController.getAccounts);
 router.post('/connect', checkFeatureAccess('github_account'), githubController.connectAccount);
