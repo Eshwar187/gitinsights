@@ -2,9 +2,17 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "../ui/Button";
 import { Send, Mic, Paperclip, Bot, User, Code as CodeIcon } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import javascript from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript';
+import python from 'react-syntax-highlighter/dist/esm/languages/hljs/python';
+import typescript from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { generateChatMessages } from "../../utils/mockData";
+
+// Register only the languages we need
+SyntaxHighlighter.registerLanguage('javascript', javascript);
+SyntaxHighlighter.registerLanguage('python', python);
+SyntaxHighlighter.registerLanguage('typescript', typescript);
 
 interface Message {
     id: string;
@@ -112,7 +120,7 @@ export const MentorChatInterface = () => {
                                     </div>
                                     <SyntaxHighlighter
                                         language={msg.language || 'javascript'}
-                                        style={vscDarkPlus}
+                                        style={atomOneDark}
                                         customStyle={{ margin: 0, padding: '1rem', fontSize: '13px' }}
                                     >
                                         {msg.code}

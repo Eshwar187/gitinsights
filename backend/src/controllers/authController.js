@@ -136,26 +136,63 @@ export const login = asyncHandler(async (req, res) => {
  * GitHub OAuth callback handler
  */
 export const githubCallback = asyncHandler(async (req, res) => {
-    const { user, accessToken } = req.user;
+    const { user, accessToken, profile } = req.user;
 
     // Import encryption utilities
     const { encrypt } = await import('../utils/encryption.js');
 
-    // Store GitHub account
-    const { data: githubAccount, error } = await supabaseAdmin
+    // Check if GitHub account already exists for this user
+    const { data: existingAccount } = await supabaseAdmin
         .from('github_accounts')
-        .upsert({
-            user_id: user.id,
-            github_id: req.user.profile?.id,
-            username: req.user.profile?.username,
-            access_token: encrypt(accessToken),
-            profile_data: req.user.profile
-        })
-        .select()
+        .select('id')
+        .eq('user_id', user.id)
         .single();
+
+    let githubAccount;
+    let error;
+
+    if (existingAccount) {
+        // Update existing account
+        const result = await supabaseAdmin
+            .from('github_accounts')
+            .update({
+                github_id: profile.id.toString(),
+                username: profile.username,
+                access_token: encrypt(accessToken),
+                profile_data: profile,
+                sync_status: 'pending',
+                updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id)
+            .select()
+            .single();
+
+        githubAccount = result.data;
+        error = result.error;
+    } else {
+        // Insert new account
+        const result = await supabaseAdmin
+            .from('github_accounts')
+            .insert({
+                user_id: user.id,
+                github_id: profile.id.toString(),
+                username: profile.username,
+                access_token: encrypt(accessToken),
+                profile_data: profile,
+                sync_status: 'pending'
+            })
+            .select()
+            .single();
+
+        githubAccount = result.data;
+        error = result.error;
+    }
 
     if (error) {
         console.error('Failed to store GitHub account:', error);
+        // Redirect with error
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        return res.redirect(`${frontendUrl}/auth/login?error=github_connection_failed`);
     }
 
     // Generate JWT tokens

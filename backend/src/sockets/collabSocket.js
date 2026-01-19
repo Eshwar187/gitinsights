@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
-import { verifyToken } from './auth.js';
 import * as collabService from '../services/collabService.js';
 import logger from '../utils/logger.js';
+
 
 /**
  * Initialize WebSocket server

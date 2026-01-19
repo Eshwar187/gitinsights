@@ -1,5 +1,4 @@
 import { Button } from "../components/ui/Button";
-import { Link } from "react-router-dom";
 import { Hero } from "../components/landing/Hero";
 import { Features } from "../components/landing/Features";
 import { Pricing } from "../components/landing/Pricing";
@@ -15,8 +14,9 @@ export default function LandingPage() {
                         </a>
                     </div>
                     <div className="flex flex-1 justify-end gap-x-4">
-                        <Link to="/auth/login"><Button variant="ghost">Log in</Button></Link>
-                        <Link to="/auth/signup"><Button>Sign up</Button></Link>
+                        <a href="http://localhost:5000/api/auth/github">
+                            <Button>Connect with GitHub</Button>
+                        </a>
                     </div>
                 </nav>
             </header>

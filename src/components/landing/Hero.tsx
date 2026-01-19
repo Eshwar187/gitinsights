@@ -1,6 +1,5 @@
 import { Button } from "../ui/Button";
-import { Link } from "react-router-dom";
-import { ArrowRight, Github } from "lucide-react";
+import { Github } from "lucide-react";
 
 export function Hero() {
     return (
@@ -27,16 +26,12 @@ export function Hero() {
                             Showcase your work, analyze your contributions, and rank among the best developers with AI-powered insights and professional portfolios.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6">
-                            <Link to="/auth/signup">
+                            <a href="http://localhost:5000/api/auth/github">
                                 <Button size="lg" className="rounded-full px-8">
-                                    Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
+                                    <Github className="mr-2 h-5 w-5" />
+                                    Connect with GitHub
                                 </Button>
-                            </Link>
-                            <Link to="/dashboard">
-                                <Button variant="outline" size="lg" className="rounded-full px-8">
-                                    Live Demo
-                                </Button>
-                            </Link>
+                            </a>
                         </div>
                         <div className="mt-8 flex justify-center gap-4 text-sm text-slate-500">
                             <span className="flex items-center gap-1"><Github className="h-4 w-4" /> Trusted by 10,000+ developers</span>

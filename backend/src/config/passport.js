@@ -52,8 +52,19 @@ passport.use(
                     user = newUser;
                 }
 
-                // Store GitHub access token (will be encrypted in the service layer)
-                return done(null, { user, accessToken });
+                // Return user, accessToken, AND profile data
+                return done(null, {
+                    user,
+                    accessToken,
+                    profile: {
+                        id: profile.id,
+                        username: profile.username,
+                        displayName: profile.displayName,
+                        emails: profile.emails,
+                        photos: profile.photos,
+                        profileUrl: profile.profileUrl
+                    }
+                });
             } catch (error) {
                 return done(error, null);
             }

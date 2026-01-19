@@ -28,6 +28,7 @@ router.get('/github/callback',
 );
 
 // Protected routes
+router.get('/me', authenticate, authController.getProfile); // Alias for /profile
 router.get('/profile', authenticate, authController.getProfile);
 router.put('/profile', authenticate, authController.updateProfile);
 
