@@ -1,52 +1,22 @@
 import { useState } from "react";
 import { Button } from "../components/ui/Button";
-import { Download, Target } from "lucide-react";
-import { StatsOverview } from "../components/activity/StatsOverview";
-import { HourlyHeatmap } from "../components/activity/HourlyHeatmap";
-import { WeeklyTrendChart } from "../components/activity/WeeklyTrendChart";
-import { LanguageBreakdown } from "../components/activity/LanguageBreakdown";
-import { ProductivityInsights } from "../components/activity/ProductivityInsights";
-import { SetGoalsModal } from "../components/activity/SetGoalsModal";
-import { generateActivityData } from "../utils/mockData";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import { Download, Activity as ActivityIcon, Clock, Flame, TrendingUp } from "lucide-react";
+import { ContributionHeatmap } from "../components/charts/ContributionHeatmap";
+import { TopLanguages } from "../components/charts/TopLanguages";
+import { useQuery } from "@tanstack/react-query";
+import { getDeveloperScores } from "../services/analyticsService";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Activity() {
-    const [showGoalsModal, setShowGoalsModal] = useState(false);
-    const [dateRange, setDateRange] = useState<"7" | "30" | "90">("7");
+    const [dateRange, setDateRange] = useState<"7" | "30" | "90">("30");
 
-    // Generate mock data
-    const activityData = generateActivityData(7);
-
-    // Calculate stats
-    const totalWeekTime = activityData.reduce((sum, d) => sum + d.minutes, 0);
-    const dayTotals = activityData.reduce((acc, d) => {
-        acc[d.day] = (acc[d.day] || 0) + d.minutes;
-        return acc;
-    }, {} as Record<string, number>);
-
-    const mostProductiveDay = Object.entries(dayTotals).sort((a, b) => b[1] - a[1])[0]?.[0] || "Monday";
-    const averagePerDay = totalWeekTime / 7;
-
-    // Weekly trend data (last 28 days)
-    const weeklyData = Array.from({ length: 28 }, (_, i) => {
-        const date = new Date();
-        date.setDate(date.getDate() - (27 - i));
-        return {
-            date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            minutes: Math.floor(Math.random() * 300) + 100
-        };
+    const { data: scoreData, isLoading } = useQuery({
+        queryKey: ['activityScores'],
+        queryFn: getDeveloperScores
     });
 
-    // Language breakdown by day
-    const languageData = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => {
-        const dayData = activityData.filter(d => d.day === day);
-        return {
-            day,
-            JavaScript: dayData.filter(d => d.language === "JavaScript").reduce((sum, d) => sum + d.minutes, 0),
-            Python: dayData.filter(d => d.language === "Python").reduce((sum, d) => sum + d.minutes, 0),
-            TypeScript: dayData.filter(d => d.language === "TypeScript").reduce((sum, d) => sum + d.minutes, 0),
-            Other: dayData.filter(d => !["JavaScript", "Python", "TypeScript"].includes(d.language)).reduce((sum, d) => sum + d.minutes, 0)
-        };
-    });
+    const scores = scoreData?.data || {};
 
     return (
         <div className="space-y-6">
@@ -54,13 +24,9 @@ export default function Activity() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Coding Activity</h1>
-                    <p className="text-slate-500 dark:text-slate-400">Track your coding patterns and productivity</p>
+                    <p className="text-slate-500 dark:text-slate-400">Track your GitHub contributions and productivity</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setShowGoalsModal(true)}>
-                        <Target className="mr-2 h-4 w-4" />
-                        Set Goals
-                    </Button>
                     <Button variant="outline" size="sm">
                         <Download className="mr-2 h-4 w-4" />
                         Export
@@ -83,39 +49,116 @@ export default function Activity() {
             </div>
 
             {/* Stats Overview */}
-            <StatsOverview
-                totalWeekTime={totalWeekTime}
-                mostProductiveDay={mostProductiveDay}
-                averagePerDay={averagePerDay}
-                currentStreak={12}
-                trend="up"
-            />
+            {isLoading ? (
+                <div className="flex justify-center py-8">
+                    <LoadingSpinner size="lg" />
+                </div>
+            ) : (
+                <div className="grid gap-4 md:grid-cols-4">
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                    <ActivityIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Total Commits</p>
+                                    <p className="text-2xl font-bold">{scores.total_commits || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+                                    <Clock className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Active Days</p>
+                                    <p className="text-2xl font-bold">{scores.active_days || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                                    <Flame className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Current Streak</p>
+                                    <p className="text-2xl font-bold">{scores.current_streak || 0} days</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                                    <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Activity Score</p>
+                                    <p className="text-2xl font-bold">{scores.activity_score || 0}/100</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
 
             {/* Main Content Grid */}
             <div className="grid gap-6 lg:grid-cols-3">
-                {/* Heatmap - Full width */}
+                {/* Contribution Heatmap - Full width */}
                 <div className="lg:col-span-3">
-                    <HourlyHeatmap data={activityData} />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Contribution Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ContributionHeatmap />
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {/* Weekly Trend - 2 columns */}
+                {/* Language Breakdown - 2 columns */}
                 <div className="lg:col-span-2">
-                    <WeeklyTrendChart data={weeklyData} />
+                    <TopLanguages />
                 </div>
 
                 {/* Productivity Insights - 1 column */}
                 <div className="lg:col-span-1">
-                    <ProductivityInsights />
-                </div>
-
-                {/* Language Breakdown - Full width */}
-                <div className="lg:col-span-3">
-                    <LanguageBreakdown data={languageData} />
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle>Productivity Insights</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-sm text-slate-500">Repositories</p>
+                                    <p className="text-xl font-bold">{scores.total_repos || 0}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Stars Earned</p>
+                                    <p className="text-xl font-bold">{scores.total_stars || 0}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Forks</p>
+                                    <p className="text-xl font-bold">{scores.total_forks || 0}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-slate-500">Overall Score</p>
+                                    <p className="text-xl font-bold text-blue-600">{scores.overall_score || 0}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
-
-            {/* Goals Modal */}
-            <SetGoalsModal isOpen={showGoalsModal} onClose={() => setShowGoalsModal(false)} />
         </div>
     );
 }
+

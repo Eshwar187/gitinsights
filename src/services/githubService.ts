@@ -27,8 +27,10 @@ export const syncGitHubData = async () => {
 /**
  * Get repositories
  */
-export const getRepositories = async () => {
-    const response = await api.get('/api/github/repositories');
+export const getRepositories = async (page: number = 1, limit: number = 20) => {
+    const response = await api.get('/api/github/repositories', {
+        params: { page, limit }
+    });
     return response.data;
 };
 

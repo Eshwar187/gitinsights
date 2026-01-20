@@ -4,9 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../co
 import { Input } from "../components/ui/Input";
 import { cn } from "../utils/cn";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { useAuth } from "../contexts/AuthContext";
+import { Github } from "lucide-react";
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState("profile");
+    const { user } = useAuth();
 
     const tabs = [
         { id: "profile", label: "Profile" },
@@ -42,22 +45,30 @@ export default function Settings() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Profile</CardTitle>
-                                <CardDescription>Manage your public profile information.</CardDescription>
+                                <CardDescription>Your public profile information from GitHub.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+                                        {user?.name?.[0] || user?.github_username?.[0] || 'U'}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-semibold">{user?.name || user?.github_username || 'User'}</h3>
+                                        <p className="text-sm text-slate-500">@{user?.github_username || 'username'}</p>
+                                    </div>
+                                </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Name</label>
-                                    <Input defaultValue="John Doe" />
+                                    <Input defaultValue={user?.name || user?.github_username || ''} readOnly />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Bio</label>
-                                    <Input defaultValue="Full Stack Developer" />
+                                    <label className="text-sm font-medium">Email</label>
+                                    <Input defaultValue={user?.email || ''} readOnly />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Website</label>
-                                    <Input defaultValue="https://johndoe.com" />
+                                <div className="flex items-center gap-2 text-sm text-slate-500">
+                                    <Github className="h-4 w-4" />
+                                    Connected via GitHub
                                 </div>
-                                <Button>Save Changes</Button>
                             </CardContent>
                         </Card>
                     )}
@@ -82,14 +93,21 @@ export default function Settings() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>Account</CardTitle>
-                                <CardDescription>Manage your account settings.</CardDescription>
+                                <CardDescription>Your account details.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium">Email</label>
-                                    <Input defaultValue="john@example.com" disabled />
+                                    <label className="text-sm font-medium">User ID</label>
+                                    <Input defaultValue={user?.id || ''} disabled className="font-mono text-xs" />
                                 </div>
-                                <Button variant="destructive">Delete Account</Button>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">GitHub Username</label>
+                                    <Input defaultValue={user?.github_username || ''} disabled />
+                                </div>
+                                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-900">
+                                    <h4 className="font-semibold text-green-900 dark:text-green-100">GitHub Connected</h4>
+                                    <p className="text-sm text-green-700 dark:text-green-300">Your GitHub account is connected and syncing.</p>
+                                </div>
                             </CardContent>
                         </Card>
                     )}
@@ -101,10 +119,16 @@ export default function Settings() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900">
-                                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">Pro Plan</h4>
-                                    <p className="text-sm text-blue-700 dark:text-blue-300">You are currently on the Pro plan.</p>
+                                    <h4 className="font-semibold text-blue-900 dark:text-blue-100 capitalize">{user?.subscription_tier || 'Free'} Plan</h4>
+                                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                                        {user?.subscription_tier === 'free' || !user?.subscription_tier
+                                            ? 'Upgrade to Pro for advanced analytics and AI features.'
+                                            : 'You have access to all premium features.'}
+                                    </p>
                                 </div>
-                                <Button>Manage Subscription</Button>
+                                {(user?.subscription_tier === 'free' || !user?.subscription_tier) && (
+                                    <Button>Upgrade to Pro</Button>
+                                )}
                             </CardContent>
                         </Card>
                     )}
@@ -113,3 +137,4 @@ export default function Settings() {
         </div>
     );
 }
+
