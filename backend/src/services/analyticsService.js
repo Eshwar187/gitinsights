@@ -194,44 +194,53 @@ export const calculateAllScores = async (githubAccountId) => {
             .select('*')
             .eq('github_account_id', githubAccountId);
 
-        const totalContributions = contributions?.reduce(
-            (sum, c) => sum + c.commits_count + c.pull_requests_count + c.issues_count + c.code_reviews_count,
-            0
-        ) || 0;
+        const totalCommits = contributions?.reduce((sum, c) => sum + (c.commits_count || 0), 0) || 0;
+
+        // Get repository stats
+        const { data: repos } = await supabaseAdmin
+            .from('repositories')
+            .select('*')
+            .eq('github_account_id', githubAccountId)
+            .is('deleted_at', null);
+
+        const totalRepos = repos?.length || 0;
+        const totalStars = repos?.reduce((sum, r) => sum + (r.stars_count || 0), 0) || 0;
+        const totalForks = repos?.reduce((sum, r) => sum + (r.forks_count || 0), 0) || 0;
 
         // Calculate streaks
         let currentStreak = 0;
         let longestStreak = 0;
         const activeDays = contributions?.length || 0;
 
+        const analyticsData = {
+            github_account_id: githubAccountId,
+            activity_score: activityScore,
+            quality_score: qualityScore,
+            impact_score: impactScore,
+            collaboration_score: collaborationScore,
+            consistency_score: consistencyScore,
+            overall_score: overallScore,
+            total_commits: totalCommits,
+            total_repos: totalRepos,
+            total_stars: totalStars,
+            total_forks: totalForks,
+            total_contributions: totalCommits,
+            current_streak: currentStreak,
+            longest_streak: longestStreak,
+            active_days: activeDays,
+            last_calculated_at: new Date().toISOString()
+        };
+
         // Update analytics table
         await supabaseAdmin
             .from('analytics')
-            .upsert({
-                github_account_id: githubAccountId,
-                activity_score: activityScore,
-                quality_score: qualityScore,
-                impact_score: impactScore,
-                collaboration_score: collaborationScore,
-                consistency_score: consistencyScore,
-                overall_score: overallScore,
-                total_contributions: totalContributions,
-                current_streak: currentStreak,
-                longest_streak: longestStreak,
-                active_days: activeDays,
-                last_calculated_at: new Date().toISOString()
-            }, {
+            .upsert(analyticsData, {
                 onConflict: 'github_account_id'
             });
 
-        return {
-            activityScore,
-            qualityScore,
-            impactScore,
-            collaborationScore,
-            consistencyScore,
-            overallScore
-        };
+        logger.info(`Analytics calculated for account ${githubAccountId}: ${totalRepos} repos, ${totalCommits} commits, ${totalStars} stars`);
+
+        return analyticsData;
     } catch (error) {
         logger.error('Failed to calculate all scores:', error);
         throw error;

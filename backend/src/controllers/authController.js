@@ -5,6 +5,7 @@ import { asyncHandler } from '../utils/errors.js';
 import { ValidationError, AuthenticationError, ConflictError } from '../utils/errors.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import logger from '../utils/logger.js';
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -138,6 +139,14 @@ export const login = asyncHandler(async (req, res) => {
 export const githubCallback = asyncHandler(async (req, res) => {
     const { user, accessToken, profile } = req.user;
 
+    // Debug logging
+    logger.info('GitHub OAuth Callback:', {
+        userId: user.id,
+        username: profile.username,
+        hasAccessToken: !!accessToken,
+        tokenLength: accessToken ? accessToken.length : 0
+    });
+
     // Import encryption utilities
     const { encrypt } = await import('../utils/encryption.js');
 
@@ -153,6 +162,7 @@ export const githubCallback = asyncHandler(async (req, res) => {
 
     if (existingAccount) {
         // Update existing account
+        logger.info(`Updating existing GitHub account for user ${user.id}`);
         const result = await supabaseAdmin
             .from('github_accounts')
             .update({
@@ -171,6 +181,7 @@ export const githubCallback = asyncHandler(async (req, res) => {
         error = result.error;
     } else {
         // Insert new account
+        logger.info(`Creating new GitHub account for user ${user.id}`);
         const result = await supabaseAdmin
             .from('github_accounts')
             .insert({
@@ -190,10 +201,13 @@ export const githubCallback = asyncHandler(async (req, res) => {
 
     if (error) {
         console.error('Failed to store GitHub account:', error);
+        logger.error('GitHub account storage error:', error);
         // Redirect with error
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         return res.redirect(`${frontendUrl}/auth/login?error=github_connection_failed`);
     }
+
+    logger.info(`GitHub account stored successfully: ${githubAccount.id}`);
 
     // Generate JWT tokens
     const token = generateToken(user.id);

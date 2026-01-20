@@ -1,6 +1,7 @@
-import { LayoutDashboard, BarChart2, FolderGit2, Settings, User, Activity, Trophy, FileCode2, Bot, Radio } from "lucide-react";
+import { LayoutDashboard, BarChart2, FolderGit2, Settings, User, Activity, Trophy, FileCode2, Bot, Radio, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../utils/cn";
+import { useAuth } from "../contexts/AuthContext";
 
 const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -17,6 +18,16 @@ const navigation = [
 
 export function Sidebar() {
     const location = useLocation();
+    const { user, logout } = useAuth();
+
+    const getInitials = (name: string) => {
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
 
     return (
         <div className="flex h-full w-64 flex-col border-r border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
@@ -52,14 +63,23 @@ export function Sidebar() {
                 })}
             </div>
             <div className="p-4 border-t border-slate-200/50 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/50">
-                <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-medium text-white shadow-lg shadow-blue-500/20">
-                        JD
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xs font-medium text-white shadow-lg shadow-blue-500/20">
+                            {user ? getInitials(user.name || user.github_username) : 'JD'}
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-0">
+                            <span className="text-sm font-medium truncate">{user?.name || user?.github_username || 'John Doe'}</span>
+                            <span className="text-xs text-slate-500 truncate">{user?.subscription_tier || 'Free'} Plan</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium">John Doe</span>
-                        <span className="text-xs text-slate-500">Pro Plan</span>
-                    </div>
+                    <button
+                        onClick={logout}
+                        className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                        title="Logout"
+                    >
+                        <LogOut className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                    </button>
                 </div>
             </div>
         </div>

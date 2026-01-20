@@ -48,13 +48,13 @@ export function TopRepos() {
                                     </p>
                                     <div className="flex items-center gap-4 text-xs text-slate-400">
                                         <span className="flex items-center gap-1">
-                                            <Star className="h-3 w-3" /> {repo.stars || 0}
+                                            <Star className="h-3 w-3" /> {repo.stars_count || 0}
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <GitFork className="h-3 w-3" /> {repo.forks || 0}
+                                            <GitFork className="h-3 w-3" /> {repo.forks_count || 0}
                                         </span>
                                         <span>
-                                            Updated {repo.updated_at ? formatDistanceToNow(new Date(repo.updated_at), { addSuffix: true }) : 'recently'}
+                                            Updated {repo.github_updated_at ? formatDistanceToNow(new Date(repo.github_updated_at), { addSuffix: true }) : 'recently'}
                                         </span>
                                     </div>
                                 </div>
@@ -62,7 +62,7 @@ export function TopRepos() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8"
-                                    onClick={() => repo.html_url && window.open(repo.html_url, '_blank')}
+                                    onClick={() => repo.url && window.open(repo.url, '_blank')}
                                 >
                                     <ExternalLink className="h-4 w-4 text-slate-400" />
                                 </Button>

@@ -8,9 +8,28 @@ import { TopRepos } from "../components/dashboard/TopRepos";
 import { DeveloperScore } from "../components/dashboard/DeveloperScore";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { AIInsightsModal } from "../components/modals/AIInsightsModal";
+import { syncGitHubData } from "../services/githubService";
+import { toast } from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Dashboard() {
     const [showAI, setShowAI] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+    const queryClient = useQueryClient();
+
+    const handleSync = async () => {
+        setSyncing(true);
+        try {
+            await syncGitHubData();
+            toast.success("GitHub data synced successfully!");
+            // Invalidate all queries to refetch data
+            queryClient.invalidateQueries();
+        } catch (error: any) {
+            toast.error(error.response?.data?.error || "Failed to sync data");
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -29,9 +48,9 @@ export default function Dashboard() {
                         <Download className="mr-2 h-4 w-4" />
                         Export
                     </Button>
-                    <Button size="sm">
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        Sync Data
+                    <Button size="sm" onClick={handleSync} disabled={syncing}>
+                        <RefreshCw className={`mr-2 h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                        {syncing ? 'Syncing...' : 'Sync Data'}
                     </Button>
                 </div>
             </div>

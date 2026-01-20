@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { loginByUsername, getCurrentUser, logout as logoutService } from '../services/authService';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { loginByUsername, logout as logoutService } from '../services/authService';
 import toast from 'react-hot-toast';
 
 interface User {
@@ -37,17 +37,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setToken(storedToken);
                 setUser(JSON.parse(storedUser));
 
-                // Verify token is still valid
-                try {
-                    const response = await getCurrentUser();
-                    setUser(response.data.user);
-                } catch (error) {
-                    // Token invalid, clear storage
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    setToken(null);
-                    setUser(null);
-                }
+                // Note: We trust localStorage for now
+                // Token validation happens on actual API calls
+                // If token is invalid, API interceptor will handle logout
             }
 
             setLoading(false);

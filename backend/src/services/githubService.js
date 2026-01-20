@@ -50,9 +50,8 @@ const retryRequest = async (fn, retries = 3, delay = 1000) => {
 /**
  * Fetch GitHub user profile
  */
-export const fetchUserProfile = async (encryptedToken) => {
+export const fetchUserProfile = async (accessToken) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await retryRequest(() => client.get('/user'));
@@ -84,9 +83,8 @@ export const fetchUserProfile = async (encryptedToken) => {
 /**
  * Fetch all user repositories
  */
-export const fetchRepositories = async (encryptedToken, username) => {
+export const fetchRepositories = async (accessToken, username) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         let allRepos = [];
@@ -145,9 +143,8 @@ export const fetchRepositories = async (encryptedToken, username) => {
 /**
  * Fetch commit statistics for a repository
  */
-export const fetchCommitStats = async (encryptedToken, owner, repo) => {
+export const fetchCommitStats = async (accessToken, owner, repo) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         // Get commit activity
@@ -178,9 +175,8 @@ export const fetchCommitStats = async (encryptedToken, owner, repo) => {
 /**
  * Fetch language statistics for a repository
  */
-export const fetchLanguageStats = async (encryptedToken, owner, repo) => {
+export const fetchLanguageStats = async (accessToken, owner, repo) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await retryRequest(() =>
@@ -200,9 +196,8 @@ export const fetchLanguageStats = async (encryptedToken, owner, repo) => {
 /**
  * Fetch contribution calendar data
  */
-export const fetchContributions = async (encryptedToken, username) => {
+export const fetchContributions = async (accessToken, username) => {
     try {
-        const accessToken = decrypt(encryptedToken);
 
         // Use GitHub GraphQL API for contribution data
         const query = `
@@ -262,9 +257,8 @@ export const fetchContributions = async (encryptedToken, username) => {
 /**
  * Fetch pull requests
  */
-export const fetchPullRequests = async (encryptedToken, username) => {
+export const fetchPullRequests = async (accessToken, username) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await retryRequest(() =>
@@ -296,9 +290,8 @@ export const fetchPullRequests = async (encryptedToken, username) => {
 /**
  * Fetch issues
  */
-export const fetchIssues = async (encryptedToken, username) => {
+export const fetchIssues = async (accessToken, username) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await retryRequest(() =>
@@ -329,9 +322,8 @@ export const fetchIssues = async (encryptedToken, username) => {
 /**
  * Fetch code reviews
  */
-export const fetchCodeReviews = async (encryptedToken, username) => {
+export const fetchCodeReviews = async (accessToken, username) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await retryRequest(() =>
@@ -355,9 +347,8 @@ export const fetchCodeReviews = async (encryptedToken, username) => {
 /**
  * Get rate limit status
  */
-export const getRateLimitStatus = async (encryptedToken) => {
+export const getRateLimitStatus = async (accessToken) => {
     try {
-        const accessToken = decrypt(encryptedToken);
         const client = createGitHubClient(accessToken);
 
         const { data } = await client.get('/rate_limit');

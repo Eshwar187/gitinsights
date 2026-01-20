@@ -27,7 +27,7 @@ export function ContributionHeatmap() {
     const contributionMap = new Map();
     let totalContributions = 0;
 
-    if (heatmapData?.success && heatmapData.data) {
+    if (heatmapData?.success && Array.isArray(heatmapData.data)) {
         heatmapData.data.forEach((item: any) => {
             const dateStr = format(parseISO(item.date), 'yyyy-MM-dd');
             contributionMap.set(dateStr, item.count);

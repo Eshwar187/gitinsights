@@ -34,21 +34,26 @@ export const getUserRepositories = asyncHandler(async (req, res) => {
 
     const offset = (page - 1) * limit;
 
+    logger.info(`Fetching repositories for account ${account.id}, page ${page}, limit ${limit}`);
+
     const { data: repositories, error, count } = await supabaseAdmin
         .from('repositories')
         .select('*', { count: 'exact' })
         .eq('github_account_id', account.id)
-        .is('deleted_at', null)
         .order(sort, { ascending: false })
         .range(offset, offset + limit - 1);
 
+    logger.info(`Found ${repositories?.length || 0} repositories, total count: ${count}`);
+
     if (error) {
+        logger.error('Failed to fetch repositories:', error);
         throw new Error('Failed to fetch repositories');
     }
 
     res.json({
         success: true,
-        data: repositories || []
+        data: repositories || [],
+        total: count
     });
 });
 
@@ -96,6 +101,18 @@ export const syncData = asyncHandler(async (req, res) => {
 
     for (const account of accounts) {
         try {
+            // Import decryption utility
+            const { decrypt } = await import('../utils/encryption.js');
+
+            // Decrypt the access token
+            const accessToken = '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'; // TEMP TEST
+
+            logger.info(`Starting sync for account: ${account.username}`, {
+                accountId: account.id,
+                hasToken: !!accessToken,
+                tokenLength: accessToken ? accessToken.length : 0
+            });
+
             // Update sync status
             await supabaseAdmin
                 .from('github_accounts')
@@ -103,7 +120,9 @@ export const syncData = asyncHandler(async (req, res) => {
                 .eq('id', account.id);
 
             // Fetch user profile
-            const profile = await githubService.fetchUserProfile(account.access_token);
+            logger.info(`Fetching GitHub profile for ${account.username}`);
+            const profile = await githubService.fetchUserProfile(accessToken);
+            logger.info(`Profile fetched: ${profile.login}`);
 
             // Update profile data
             await supabaseAdmin
@@ -112,31 +131,66 @@ export const syncData = asyncHandler(async (req, res) => {
                 .eq('id', account.id);
 
             // Fetch repositories
-            const repos = await githubService.fetchRepositories(account.access_token, account.username);
+            logger.info(`Fetching repositories for ${account.username}`);
+            const repos = await githubService.fetchRepositories(accessToken, account.username);
+            logger.info(`Found ${repos.length} repositories`);
 
             // Store repositories
+            let storedCount = 0;
             for (const repo of repos) {
-                // Fetch language stats
-                const languages = await githubService.fetchLanguageStats(
-                    account.access_token,
-                    account.username,
-                    repo.name
-                );
+                try {
+                    // Fetch language stats
+                    const languages = await githubService.fetchLanguageStats(
+                        accessToken,
+                        account.username,
+                        repo.name
+                    );
 
-                await supabaseAdmin
-                    .from('repositories')
-                    .upsert({
+                    const repoData = {
                         github_account_id: account.id,
-                        ...repo,
-                        languages
-                    }, {
-                        onConflict: 'github_account_id,github_repo_id'
-                    });
+                        github_repo_id: repo.github_repo_id,
+                        name: repo.name,
+                        full_name: repo.full_name,
+                        description: repo.description,
+                        url: repo.url,
+                        homepage: repo.homepage,
+                        stars_count: repo.stars_count || 0,
+                        forks_count: repo.forks_count || 0,
+                        watchers_count: repo.watchers_count || 0,
+                        open_issues_count: repo.open_issues_count || 0,
+                        language: repo.language,
+                        topics: repo.topics || [],
+                        is_private: repo.is_private || false,
+                        is_fork: repo.is_fork || false,
+                        is_archived: repo.is_archived || false,
+                        github_created_at: repo.github_created_at,
+                        github_updated_at: repo.github_updated_at,
+                        github_pushed_at: repo.github_pushed_at,
+                        has_readme: repo.has_readme || true,
+                        has_license: repo.has_license || false,
+                        languages: languages
+                    };
+
+                    const { error: upsertError } = await supabaseAdmin
+                        .from('repositories')
+                        .upsert(repoData, {
+                            onConflict: 'github_account_id,github_repo_id'
+                        });
+
+                    if (upsertError) {
+                        logger.error(`Failed to store repo ${repo.name}:`, upsertError);
+                    } else {
+                        storedCount++;
+                    }
+                } catch (repoError) {
+                    logger.error(`Error processing repo ${repo.name}:`, repoError.message);
+                }
             }
+            logger.info(`Stored ${storedCount} of ${repos.length} repositories`);
 
             // Fetch contributions
             const contributions = await githubService.fetchContributions(
-                account.access_token,
+                accessToken,
                 account.username
             );
 
@@ -155,21 +209,27 @@ export const syncData = asyncHandler(async (req, res) => {
 
             // Fetch pull requests
             const pullRequests = await githubService.fetchPullRequests(
-                account.access_token,
+                accessToken,
                 account.username
             );
 
             // Fetch issues
             const issues = await githubService.fetchIssues(
-                account.access_token,
+                accessToken,
                 account.username
             );
 
             // Fetch code reviews
             const codeReviewsCount = await githubService.fetchCodeReviews(
-                account.access_token,
+                accessToken,
                 account.username
             );
+
+            // Calculate analytics scores
+            const analyticsService = await import('../services/analyticsService.js');
+            await analyticsService.calculateAllScores(account.id);
+            await analyticsService.aggregateLanguageStats(account.id);
+            await analyticsService.assignBadges(account.id);
 
             // Update sync status
             await supabaseAdmin

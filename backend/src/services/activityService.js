@@ -71,41 +71,49 @@ export const recordActivity = async (userId, activityData) => {
 };
 
 /**
- * Get activity heatmap
+ * Get activity heatmap from GitHub contributions
  */
 export const getHeatmap = async (userId, startDate, endDate, timezone = 'UTC') => {
     try {
-        const { data, error } = await supabaseAdmin
-            .from('coding_activity')
-            .select('*')
+        // First get the user's GitHub account
+        const { data: account } = await supabaseAdmin
+            .from('github_accounts')
+            .select('id')
             .eq('user_id', userId)
-            .gte('activity_date', startDate)
-            .lte('activity_date', endDate)
-            .order('activity_date', { ascending: true })
-            .order('hour_of_day', { ascending: true });
+            .limit(1)
+            .single();
 
-        if (error) throw error;
+        if (!account) {
+            logger.info('No GitHub account found for heatmap');
+            return [];
+        }
 
-        // Calculate intensity levels
-        const heatmapData = (data || []).map(activity => ({
-            date: activity.activity_date,
-            hour: activity.hour_of_day,
-            minutes: activity.minutes_coded,
-            intensity: calculateIntensity(activity.minutes_coded),
-            language: activity.language,
-            repository: activity.repository
+        // Get contributions from contributions table
+        const { data, error } = await supabaseAdmin
+            .from('contributions')
+            .select('contribution_date, commits_count')
+            .eq('github_account_id', account.id)
+            .gte('contribution_date', startDate)
+            .lte('contribution_date', endDate)
+            .order('contribution_date', { ascending: true });
+
+        if (error) {
+            logger.error('Failed to get contributions:', error);
+            throw error;
+        }
+
+        logger.info(`Found ${data?.length || 0} contribution days for heatmap`);
+
+        // Map to the format expected by frontend: { date, count }
+        const heatmapData = (data || []).map(contribution => ({
+            date: contribution.contribution_date,
+            count: contribution.commits_count || 0
         }));
 
-        // Calculate statistics
-        const stats = calculateHeatmapStats(data || []);
-
-        return {
-            heatmapData,
-            stats
-        };
+        return heatmapData;
     } catch (error) {
         logger.error('Failed to get heatmap:', error);
-        throw error;
+        return [];
     }
 };
 
