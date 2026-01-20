@@ -161,6 +161,38 @@ export const githubCallback = asyncHandler(async (req, res) => {
     let error;
 
     if (existingAccount) {
+        // Check if we need to get full account info to compare github_id
+        const { data: fullExistingAccount } = await supabaseAdmin
+            .from('github_accounts')
+            .select('id, github_id')
+            .eq('user_id', user.id)
+            .single();
+
+        // If switching to a DIFFERENT GitHub account, clear old data
+        if (fullExistingAccount && fullExistingAccount.github_id !== profile.id.toString()) {
+            logger.info(`Switching GitHub account from ${fullExistingAccount.github_id} to ${profile.id} - clearing old data`);
+
+            // Delete old repositories
+            await supabaseAdmin
+                .from('repositories')
+                .delete()
+                .eq('github_account_id', fullExistingAccount.id);
+
+            // Delete old analytics
+            await supabaseAdmin
+                .from('analytics')
+                .delete()
+                .eq('github_account_id', fullExistingAccount.id);
+
+            // Delete old contributions
+            await supabaseAdmin
+                .from('contributions')
+                .delete()
+                .eq('github_account_id', fullExistingAccount.id);
+
+            logger.info('Old data cleared successfully');
+        }
+
         // Update existing account
         logger.info(`Updating existing GitHub account for user ${user.id}`);
         const result = await supabaseAdmin

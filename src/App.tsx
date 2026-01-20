@@ -22,6 +22,10 @@ import CompareStats from "./pages/CompareStats";
 import TimeMachine from "./pages/TimeMachine";
 import ProfileCard from "./pages/ProfileCard";
 import RepoHealth from "./pages/RepoHealth";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import RefundPolicy from "./pages/RefundPolicy";
+import ContactUs from "./pages/ContactUs";
 import { Toaster } from "react-hot-toast";
 
 // Create React Query client
@@ -49,6 +53,10 @@ function App() {
                 <Route path="/auth/login" element={<Login />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/p/:username" element={<PublicPortfolio />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsConditions />} />
+                <Route path="/refund" element={<RefundPolicy />} />
+                <Route path="/contact" element={<ContactUs />} />
               </Route>
 
               {/* Protected Dashboard Routes */}

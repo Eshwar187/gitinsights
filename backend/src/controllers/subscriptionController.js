@@ -197,3 +197,34 @@ export const webhook = asyncHandler(async (req, res) => {
 
     res.json({ success: true });
 });
+
+/**
+ * Simple upgrade subscription (for demo/testing without Razorpay)
+ */
+export const upgradeSubscription = asyncHandler(async (req, res) => {
+    const { tier } = req.body;
+    const userId = req.user.id;
+
+    // Validate tier
+    const validTiers = ['free', 'pro', 'premium'];
+    if (!validTiers.includes(tier)) {
+        throw new ValidationError('Invalid subscription tier');
+    }
+
+    // Update user's subscription tier in accounts table
+    const { error } = await supabaseAdmin
+        .from('accounts')
+        .update({ subscription_tier: tier })
+        .eq('id', userId);
+
+    if (error) {
+        console.error('Error updating subscription:', error);
+        throw new Error('Failed to update subscription');
+    }
+
+    res.json({
+        success: true,
+        message: `Successfully upgraded to ${tier} plan`,
+        data: { tier }
+    });
+});

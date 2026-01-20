@@ -14,6 +14,7 @@ router.use(authenticate);
 
 router.post('/subscribe', subscribeValidation, subscriptionController.subscribe);
 router.post('/verify', subscriptionController.verifyPayment);
+router.post('/upgrade', subscriptionController.upgradeSubscription);
 router.post('/cancel', subscriptionController.cancel);
 router.get('/current', subscriptionController.getCurrentSubscription);
 router.get('/usage', subscriptionController.getUsage);

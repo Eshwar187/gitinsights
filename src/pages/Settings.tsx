@@ -6,9 +6,12 @@ import { cn } from "../utils/cn";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { useAuth } from "../contexts/AuthContext";
 import { Github } from "lucide-react";
+import { PaymentModal } from "../components/modals/PaymentModal";
 
 export default function Settings() {
     const [activeTab, setActiveTab] = useState("profile");
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState<{ name: string, price: string } | null>(null);
     const { user } = useAuth();
 
     const tabs = [
@@ -18,9 +21,21 @@ export default function Settings() {
         { id: "subscription", label: "Subscription" },
     ];
 
+    const handleUpgrade = (planName: string, price: string) => {
+        setSelectedPlan({ name: planName, price });
+        setShowPaymentModal(true);
+    };
+
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+
+            <PaymentModal
+                isOpen={showPaymentModal}
+                onClose={() => setShowPaymentModal(false)}
+                plan={selectedPlan?.name || "Pro"}
+                price={selectedPlan?.price || "₹199"}
+            />
 
             <div className="flex flex-col md:flex-row gap-6">
                 <aside className="w-full md:w-64">
@@ -122,12 +137,19 @@ export default function Settings() {
                                     <h4 className="font-semibold text-blue-900 dark:text-blue-100 capitalize">{user?.subscription_tier || 'Free'} Plan</h4>
                                     <p className="text-sm text-blue-700 dark:text-blue-300">
                                         {user?.subscription_tier === 'free' || !user?.subscription_tier
-                                            ? 'Upgrade to Pro for advanced analytics and AI features.'
+                                            ? 'Upgrade for more features and unlimited syncs.'
                                             : 'You have access to all premium features.'}
                                     </p>
                                 </div>
                                 {(user?.subscription_tier === 'free' || !user?.subscription_tier) && (
-                                    <Button>Upgrade to Pro</Button>
+                                    <div className="flex gap-3">
+                                        <Button onClick={() => handleUpgrade('Pro', '₹199')}>
+                                            Upgrade to Pro - ₹199/mo
+                                        </Button>
+                                        <Button variant="outline" onClick={() => handleUpgrade('Premium', '₹499')}>
+                                            Premium - ₹499/mo
+                                        </Button>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
@@ -137,4 +159,3 @@ export default function Settings() {
         </div>
     );
 }
-

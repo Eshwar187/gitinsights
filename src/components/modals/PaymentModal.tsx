@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/Card";
 import { Check, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface PaymentModalProps {
     plan: string;
@@ -11,21 +12,58 @@ interface PaymentModalProps {
 }
 
 export function PaymentModal({ plan, price, isOpen, onClose }: PaymentModalProps) {
-    const [step, setStep] = useState<"details" | "processing" | "success">("details");
+    const [step, setStep] = useState<"details" | "processing" | "success" | "error">("details");
 
     if (!isOpen) return null;
 
-    const handlePay = () => {
+    const handlePay = async () => {
         setStep("processing");
-        setTimeout(() => {
-            setStep("success");
-        }, 2000);
+
+        try {
+            // Get the tier name from plan
+            const tier = plan.toLowerCase(); // 'pro' or 'premium'
+
+            // Call API to update subscription
+            const response = await fetch('/api/subscription/upgrade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ tier })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setStep("success");
+                // Update local storage with new tier
+                const userData = JSON.parse(localStorage.getItem('user') || '{}');
+                userData.subscription_tier = tier;
+                localStorage.setItem('user', JSON.stringify(userData));
+            } else {
+                throw new Error(data.message || 'Payment failed');
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            setStep("error");
+            toast.error('Payment failed. Please try again.');
+        }
+    };
+
+    const handleClose = () => {
+        setStep("details");
+        onClose();
+        // Reload page to refresh user context
+        if (step === "success") {
+            window.location.reload();
+        }
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <Card className="w-full max-w-md relative">
-                <button onClick={onClose} className="absolute right-4 top-4 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100">
+                <button onClick={handleClose} className="absolute right-4 top-4 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100">
                     <X className="h-4 w-4" />
                 </button>
 
@@ -33,7 +71,7 @@ export function PaymentModal({ plan, price, isOpen, onClose }: PaymentModalProps
                     <>
                         <CardHeader>
                             <CardTitle>Upgrade to {plan}</CardTitle>
-                            <CardDescription>Secure payment via Razorpay (Simulated)</CardDescription>
+                            <CardDescription>Secure payment via Razorpay</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex justify-between items-center p-4 bg-slate-50 dark:bg-slate-900 rounded-lg">
@@ -70,7 +108,20 @@ export function PaymentModal({ plan, price, isOpen, onClose }: PaymentModalProps
                             <h3 className="text-lg font-bold">Payment Successful!</h3>
                             <p className="text-sm text-slate-500">Welcome to GitInsights {plan}.</p>
                         </div>
-                        <Button onClick={onClose} className="mt-4">Continue to Dashboard</Button>
+                        <Button onClick={handleClose} className="mt-4">Continue to Dashboard</Button>
+                    </CardContent>
+                )}
+
+                {step === "error" && (
+                    <CardContent className="py-12 flex flex-col items-center justify-center space-y-4 text-center">
+                        <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400">
+                            <X className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold">Payment Failed</h3>
+                            <p className="text-sm text-slate-500">Please try again.</p>
+                        </div>
+                        <Button onClick={() => setStep("details")} className="mt-4">Try Again</Button>
                     </CardContent>
                 )}
             </Card>
