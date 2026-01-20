@@ -15,9 +15,13 @@ import Settings from "./pages/Settings";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Activity from "./pages/Activity";
 import SkillTree from "./pages/SkillTree";
-import CodeReview from "./pages/CodeReview";
-import Mentor from "./pages/Mentor";
-import Collaborate from "./pages/Collaborate";
+import DeveloperDNA from "./pages/DeveloperDNA";
+import GitHubWrapped from "./pages/GitHubWrapped";
+import Achievements from "./pages/Achievements";
+import CompareStats from "./pages/CompareStats";
+import TimeMachine from "./pages/TimeMachine";
+import ProfileCard from "./pages/ProfileCard";
+import RepoHealth from "./pages/RepoHealth";
 import { Toaster } from "react-hot-toast";
 
 // Create React Query client
@@ -59,10 +63,14 @@ function App() {
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/skills" element={<SkillTree />} />
-                <Route path="/code-review" element={<CodeReview />} />
-                <Route path="/mentor" element={<Mentor />} />
-                <Route path="/collaborate" element={<Collaborate />} />
                 <Route path="/repositories" element={<Repositories />} />
+                <Route path="/dna" element={<DeveloperDNA />} />
+                <Route path="/wrapped" element={<GitHubWrapped />} />
+                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/compare" element={<CompareStats />} />
+                <Route path="/time-machine" element={<TimeMachine />} />
+                <Route path="/profile-card" element={<ProfileCard />} />
+                <Route path="/repo-health" element={<RepoHealth />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
 
