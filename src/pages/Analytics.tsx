@@ -3,14 +3,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../co
 import { ContributionHeatmap } from "../components/charts/ContributionHeatmap";
 import { TopLanguages } from "../components/charts/TopLanguages";
 import { cn } from "../utils/cn";
+import { useQuery } from "@tanstack/react-query";
+import { getDeveloperScores } from "../services/analyticsService";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Analytics() {
     const [activeTab, setActiveTab] = useState("contributions");
 
+    const { data: scoreData, isLoading } = useQuery({
+        queryKey: ['developerScoreAnalytics'],
+        queryFn: getDeveloperScores
+    });
+
+    const scores = scoreData?.data || {};
+
     const tabs = [
         { id: "contributions", label: "Contributions" },
         { id: "languages", label: "Languages" },
-        { id: "quality", label: "Commit Quality" },
+        { id: "quality", label: "Code Quality" },
         { id: "comparison", label: "Comparison" },
     ];
 
@@ -51,10 +61,23 @@ export default function Analytics() {
                         <TopLanguages />
                         <Card>
                             <CardHeader>
-                                <CardTitle>Language Trends</CardTitle>
+                                <CardTitle>Language Stats</CardTitle>
                             </CardHeader>
-                            <CardContent className="h-[200px] flex items-center justify-center text-slate-500">
-                                Line Chart Placeholder
+                            <CardContent>
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Total Repositories</span>
+                                        <span className="font-bold">{scores.total_repos || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Total Commits</span>
+                                        <span className="font-bold">{scores.total_commits || 0}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-600">Active Days</span>
+                                        <span className="font-bold">{scores.active_days || 0}</span>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -65,31 +88,49 @@ export default function Analytics() {
                             <CardTitle>Code Quality Metrics</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid gap-4 md:grid-cols-3">
-                                <div className="p-4 border rounded-lg text-center">
-                                    <div className="text-2xl font-bold text-green-500">A+</div>
-                                    <div className="text-xs text-slate-500">Average Grade</div>
+                            {isLoading ? (
+                                <div className="flex justify-center py-8"><LoadingSpinner size="sm" /></div>
+                            ) : (
+                                <div className="grid gap-4 md:grid-cols-4">
+                                    <div className="p-4 border rounded-lg text-center">
+                                        <div className="text-2xl font-bold text-blue-500">{scores.activity_score || 0}/100</div>
+                                        <div className="text-xs text-slate-500">Activity Score</div>
+                                    </div>
+                                    <div className="p-4 border rounded-lg text-center">
+                                        <div className="text-2xl font-bold text-green-500">{scores.quality_score || 0}/100</div>
+                                        <div className="text-xs text-slate-500">Quality Score</div>
+                                    </div>
+                                    <div className="p-4 border rounded-lg text-center">
+                                        <div className="text-2xl font-bold text-purple-500">{scores.impact_score || 0}/100</div>
+                                        <div className="text-xs text-slate-500">Impact Score</div>
+                                    </div>
+                                    <div className="p-4 border rounded-lg text-center">
+                                        <div className="text-2xl font-bold text-orange-500">{scores.consistency_score || 0}/100</div>
+                                        <div className="text-xs text-slate-500">Consistency Score</div>
+                                    </div>
                                 </div>
-                                <div className="p-4 border rounded-lg text-center">
-                                    <div className="text-2xl font-bold">85%</div>
-                                    <div className="text-xs text-slate-500">Test Coverage</div>
-                                </div>
-                                <div className="p-4 border rounded-lg text-center">
-                                    <div className="text-2xl font-bold">1.2</div>
-                                    <div className="text-xs text-slate-500">Avg Complexity</div>
-                                </div>
-                            </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}
                 {activeTab === "comparison" && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Global Comparison</CardTitle>
+                            <CardTitle>Your Developer Profile</CardTitle>
                         </CardHeader>
-                        <CardContent className="h-[300px] flex flex-col items-center justify-center gap-4">
-                            <div className="text-4xl font-bold text-blue-600">Top 5%</div>
-                            <p className="text-center text-slate-500 max-w-md">You're performing better than 95% of developers in your region based on commit frequency and code quality.</p>
+                        <CardContent className="flex flex-col items-center justify-center gap-4 py-8">
+                            <div className="text-6xl font-bold text-blue-600">{scores.overall_score || 0}</div>
+                            <div className="text-xl text-slate-500">Overall Developer Score</div>
+                            <div className="grid grid-cols-2 gap-8 mt-4 text-center">
+                                <div>
+                                    <div className="text-2xl font-bold">{scores.total_repos || 0}</div>
+                                    <div className="text-sm text-slate-500">Repositories</div>
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-bold">{scores.total_stars || 0}</div>
+                                    <div className="text-sm text-slate-500">Stars Earned</div>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 )}
@@ -97,3 +138,4 @@ export default function Analytics() {
         </div>
     );
 }
+
