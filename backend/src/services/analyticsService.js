@@ -36,29 +36,32 @@ export const calculateActivityScore = async (githubAccountId) => {
 
 /**
  * Calculate Quality Score (0-100)
- * Based on commit quality, tests, documentation
+ * Based on repository characteristics
  */
 export const calculateQualityScore = async (githubAccountId) => {
     try {
         const { data: repos } = await supabaseAdmin
             .from('repositories')
             .select('*')
-            .eq('github_account_id', githubAccountId)
-            .is('deleted_at', null);
+            .eq('github_account_id', githubAccountId);
 
         if (!repos || repos.length === 0) return 0;
 
-        const hasReadme = repos.filter(r => r.has_readme).length;
-        const hasLicense = repos.filter(r => r.has_license).length;
-        const hasTests = repos.filter(r => r.has_tests).length;
-        const hasContributing = repos.filter(r => r.has_contributing).length;
+        // Score based on: description, language, not archived
+        let score = 0;
+        const totalRepos = repos.length;
 
-        const readmeScore = (hasReadme / repos.length) * 30;
-        const licenseScore = (hasLicense / repos.length) * 20;
-        const testScore = (hasTests / repos.length) * 35;
-        const contributingScore = (hasContributing / repos.length) * 15;
+        const withDescription = repos.filter(r => r.description && r.description.length > 10).length;
+        const withLanguage = repos.filter(r => r.language).length;
+        const notArchived = repos.filter(r => !r.is_archived).length;
+        const notForked = repos.filter(r => !r.is_fork).length;
 
-        return Math.round(readmeScore + licenseScore + testScore + contributingScore);
+        score += (withDescription / totalRepos) * 30;  // 30 points for descriptions
+        score += (withLanguage / totalRepos) * 25;     // 25 points for having language
+        score += (notArchived / totalRepos) * 25;      // 25 points for active repos
+        score += (notForked / totalRepos) * 20;        // 20 points for original work
+
+        return Math.round(score);
     } catch (error) {
         logger.error('Failed to calculate quality score:', error);
         return 0;
@@ -74,8 +77,7 @@ export const calculateImpactScore = async (githubAccountId) => {
         const { data: repos } = await supabaseAdmin
             .from('repositories')
             .select('*')
-            .eq('github_account_id', githubAccountId)
-            .is('deleted_at', null);
+            .eq('github_account_id', githubAccountId);
 
         if (!repos || repos.length === 0) return 0;
 
@@ -207,10 +209,47 @@ export const calculateAllScores = async (githubAccountId) => {
         const totalStars = repos?.reduce((sum, r) => sum + (r.stars_count || 0), 0) || 0;
         const totalForks = repos?.reduce((sum, r) => sum + (r.forks_count || 0), 0) || 0;
 
-        // Calculate streaks
+        // Calculate streaks from contribution data
         let currentStreak = 0;
         let longestStreak = 0;
         const activeDays = contributions?.length || 0;
+
+        if (contributions && contributions.length > 0) {
+            // Sort contributions by date
+            const sorted = [...contributions].sort((a, b) =>
+                new Date(a.contribution_date) - new Date(b.contribution_date)
+            );
+
+            let tempStreak = 1;
+            let lastDate = null;
+
+            sorted.forEach(contrib => {
+                const date = new Date(contrib.contribution_date);
+                if (lastDate) {
+                    const dayDiff = Math.floor((date - lastDate) / (1000 * 60 * 60 * 24));
+                    if (dayDiff === 1) {
+                        tempStreak++;
+                    } else if (dayDiff > 1) {
+                        longestStreak = Math.max(longestStreak, tempStreak);
+                        tempStreak = 1;
+                    }
+                }
+                lastDate = date;
+            });
+
+            longestStreak = Math.max(longestStreak, tempStreak);
+
+            // Check if streak continues to today
+            const lastContrib = new Date(sorted[sorted.length - 1].contribution_date);
+            const today = new Date();
+            const daysSinceLast = Math.floor((today - lastContrib) / (1000 * 60 * 60 * 24));
+
+            if (daysSinceLast <= 1) {
+                currentStreak = tempStreak;
+            } else {
+                currentStreak = 0;
+            }
+        }
 
         const analyticsData = {
             github_account_id: githubAccountId,

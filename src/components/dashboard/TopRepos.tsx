@@ -8,10 +8,13 @@ import LoadingSpinner from "../LoadingSpinner";
 import { formatDistanceToNow } from "date-fns";
 
 export function TopRepos() {
-    const { data: reposData, isLoading } = useQuery({
+    const { data: reposData, isLoading, error } = useQuery({
         queryKey: ['topRepositories'],
-        queryFn: getRepositories
+        queryFn: () => getRepositories(1, 5)  // Get top 5 repos
     });
+
+    // Debug logging
+    console.log('TopRepos data:', reposData, 'error:', error);
 
     return (
         <Card className="col-span-3 lg:col-span-2">

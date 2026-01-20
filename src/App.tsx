@@ -11,7 +11,6 @@ import Login from "./pages/Auth/Login";
 import AuthCallback from "./pages/Auth/Callback";
 import Analytics from "./pages/Analytics";
 import Repositories from "./pages/Repositories";
-import Editor from "./pages/Editor";
 import Settings from "./pages/Settings";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Activity from "./pages/Activity";
@@ -64,7 +63,6 @@ function App() {
                 <Route path="/mentor" element={<Mentor />} />
                 <Route path="/collaborate" element={<Collaborate />} />
                 <Route path="/repositories" element={<Repositories />} />
-                <Route path="/portfolio" element={<Editor />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
 

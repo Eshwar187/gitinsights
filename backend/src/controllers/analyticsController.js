@@ -299,19 +299,32 @@ export const getUserHeatmap = asyncHandler(async (req, res) => {
 export const getUserLanguageStats = asyncHandler(async (req, res) => {
     const account = await getUserGitHubAccount(req.user.id);
 
-    const { data: analytics } = await supabaseAdmin
-        .from('analytics')
-        .select('language_stats, top_languages')
+    // Query languages directly from repositories table
+    const { data: repos } = await supabaseAdmin
+        .from('repositories')
+        .select('language')
         .eq('github_account_id', account.id)
-        .single();
+        .not('language', 'is', null);
 
-    // Format for frontend pie chart
-    const languageData = analytics?.top_languages || [];
-    const formattedData = languageData.map(lang => ({
-        language: lang.language || lang.name,
-        percentage: lang.percentage || lang.value || 0,
-        bytes: lang.bytes || 0
-    }));
+    // Count languages
+    const languageCounts = {};
+    repos?.forEach(repo => {
+        if (repo.language) {
+            languageCounts[repo.language] = (languageCounts[repo.language] || 0) + 1;
+        }
+    });
+
+    const totalRepos = repos?.length || 1;
+
+    // Format for pie chart
+    const formattedData = Object.entries(languageCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([language, count]) => ({
+            language: language,
+            percentage: parseFloat(((count / totalRepos) * 100).toFixed(1)),
+            usage_count: count
+        }));
 
     res.json({
         success: true,

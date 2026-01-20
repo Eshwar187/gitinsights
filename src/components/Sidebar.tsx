@@ -1,4 +1,4 @@
-import { LayoutDashboard, BarChart2, FolderGit2, Settings, User, Activity, Trophy, FileCode2, Bot, Radio, LogOut } from "lucide-react";
+import { LayoutDashboard, BarChart2, FolderGit2, Settings, Activity, Trophy, FileCode2, Bot, Radio, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../utils/cn";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,7 +12,6 @@ const navigation = [
     { name: "AI Mentor", href: "/mentor", icon: Bot },
     { name: "Collaborate", href: "/collaborate", icon: Radio },
     { name: "Repositories", href: "/repositories", icon: FolderGit2 },
-    { name: "Portfolio", href: "/portfolio", icon: User },
     { name: "Settings", href: "/settings", icon: Settings },
 ];
 
