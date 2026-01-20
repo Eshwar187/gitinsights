@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "../components/ui/Button";
 import { Download, RefreshCw, Sparkles } from "lucide-react";
 import { StatsCards } from "../components/dashboard/StatsCards";
@@ -16,13 +16,45 @@ export default function Dashboard() {
     const [showAI, setShowAI] = useState(false);
     const [syncing, setSyncing] = useState(false);
     const queryClient = useQueryClient();
+    const hasSynced = useRef(false);
+
+    // Auto-sync on first load
+    useEffect(() => {
+        const autoSync = async () => {
+            // Only sync once per session
+            if (hasSynced.current) return;
+
+            // Check if we've synced recently (within last 5 mins)
+            const lastSync = localStorage.getItem('lastGitHubSync');
+            const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
+
+            if (lastSync && parseInt(lastSync) > fiveMinutesAgo) {
+                hasSynced.current = true;
+                return;
+            }
+
+            hasSynced.current = true;
+            setSyncing(true);
+            try {
+                await syncGitHubData();
+                localStorage.setItem('lastGitHubSync', Date.now().toString());
+                queryClient.invalidateQueries();
+            } catch (error) {
+                console.error('Auto-sync failed:', error);
+            } finally {
+                setSyncing(false);
+            }
+        };
+
+        autoSync();
+    }, [queryClient]);
 
     const handleSync = async () => {
         setSyncing(true);
         try {
             await syncGitHubData();
+            localStorage.setItem('lastGitHubSync', Date.now().toString());
             toast.success("GitHub data synced successfully!");
-            // Invalidate all queries to refetch data
             queryClient.invalidateQueries();
         } catch (error: any) {
             toast.error(error.response?.data?.error || "Failed to sync data");

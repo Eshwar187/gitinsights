@@ -238,6 +238,9 @@ export const calculateAllScores = async (githubAccountId) => {
                 onConflict: 'github_account_id'
             });
 
+        // Calculate and store language stats
+        await aggregateLanguageStats(githubAccountId);
+
         logger.info(`Analytics calculated for account ${githubAccountId}: ${totalRepos} repos, ${totalCommits} commits, ${totalStars} stars`);
 
         return analyticsData;
@@ -254,48 +257,52 @@ export const aggregateLanguageStats = async (githubAccountId) => {
     try {
         const { data: repos } = await supabaseAdmin
             .from('repositories')
-            .select('languages')
-            .eq('github_account_id', githubAccountId)
-            .is('deleted_at', null);
+            .select('language, languages')
+            .eq('github_account_id', githubAccountId);
 
-        const languageStats = {};
-
+        // Count primary languages from repos
+        const languageCounts = {};
         repos?.forEach(repo => {
-            if (repo.languages) {
+            if (repo.language) {
+                languageCounts[repo.language] = (languageCounts[repo.language] || 0) + 1;
+            }
+            // Also count from detailed languages object if available
+            if (repo.languages && typeof repo.languages === 'object') {
                 Object.entries(repo.languages).forEach(([lang, bytes]) => {
-                    languageStats[lang] = (languageStats[lang] || 0) + bytes;
+                    if (!languageCounts[lang]) {
+                        languageCounts[lang] = 0;
+                    }
                 });
             }
         });
 
-        const totalBytes = Object.values(languageStats).reduce((sum, bytes) => sum + bytes, 0);
+        const totalRepos = repos?.length || 1;
 
-        const languagePercentages = {};
-        Object.entries(languageStats).forEach(([lang, bytes]) => {
-            languagePercentages[lang] = {
-                bytes,
-                percentage: ((bytes / totalBytes) * 100).toFixed(2)
-            };
-        });
+        // Create language stats with percentages
+        const topLanguages = Object.entries(languageCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([language, count]) => ({
+                language: language,
+                percentage: parseFloat(((count / totalRepos) * 100).toFixed(1)),
+                usage_count: count
+            }));
 
-        const topLanguages = Object.entries(languagePercentages)
-            .sort((a, b) => b[1].bytes - a[1].bytes)
-            .slice(0, 5)
-            .map(([lang]) => lang);
+        logger.info(`Aggregated ${topLanguages.length} languages for account ${githubAccountId}`);
 
-        // Update analytics
+        // Update analytics with proper format
         await supabaseAdmin
             .from('analytics')
             .update({
-                language_stats: languagePercentages,
-                top_languages: topLanguages
+                top_languages: topLanguages,
+                language_stats: languageCounts
             })
             .eq('github_account_id', githubAccountId);
 
-        return { languageStats: languagePercentages, topLanguages };
+        return { topLanguages };
     } catch (error) {
         logger.error('Failed to aggregate language stats:', error);
-        throw error;
+        return { topLanguages: [] };
     }
 };
 

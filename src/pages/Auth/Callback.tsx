@@ -36,6 +36,9 @@ export default function AuthCallback() {
                         localStorage.setItem('refreshToken', refreshToken);
                         localStorage.setItem('user', JSON.stringify(data.data));
 
+                        // Clear lastSync to trigger fresh sync on Dashboard
+                        localStorage.removeItem('lastGitHubSync');
+
                         toast.success('Successfully connected with GitHub!');
 
                         // Reload to trigger AuthContext to pick up the new auth state
