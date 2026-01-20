@@ -36,6 +36,9 @@ export function TopLanguages() {
         );
     }
 
+    // Debug: Log what we're receiving from API
+    console.log('TopLanguages API Response:', langData);
+
     const chartData = langData?.success && langData.data
         ? langData.data.map((lang: any) => ({
             name: lang.language,
@@ -43,6 +46,8 @@ export function TopLanguages() {
             color: LANGUAGE_COLORS[lang.language] || "#888888"
         }))
         : [];
+
+    console.log('TopLanguages Chart Data:', chartData);
 
     return (
         <Card className="col-span-3 lg:col-span-1">
