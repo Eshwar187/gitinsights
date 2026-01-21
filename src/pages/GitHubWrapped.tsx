@@ -8,8 +8,17 @@ import { Download, Share2, Sparkles, Calendar, Code2, Flame, Star, GitFork } fro
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 export default function GitHubWrapped() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('wrapped')) {
+        return <UpgradePrompt feature="wrapped" requiredTier="pro" />;
+    }
+
     const cardRef = useRef<HTMLDivElement>(null);
     const [downloading, setDownloading] = useState(false);
 

@@ -1,17 +1,25 @@
-import { LayoutDashboard, BarChart2, FolderGit2, Settings, Activity, Trophy, Dna, Gift, Medal, Users, Clock, CreditCard, HeartPulse, LogOut } from "lucide-react";
+import { LayoutDashboard, BarChart2, FolderGit2, Settings, Activity, Trophy, Dna, Gift, Medal, Users, Clock, CreditCard, HeartPulse, LogOut, Lock } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../utils/cn";
 import { useAuth } from "../contexts/AuthContext";
+import { useSubscription } from "../hooks/useSubscription";
 
-const navigation = [
+interface NavItem {
+    name: string;
+    href: string;
+    icon: any;
+    tier?: 'pro' | 'premium';
+}
+
+const navigation: NavItem[] = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Developer DNA", href: "/dna", icon: Dna },
-    { name: "GitHub Wrapped", href: "/wrapped", icon: Gift },
-    { name: "Achievements", href: "/achievements", icon: Medal },
-    { name: "Compare Stats", href: "/compare", icon: Users },
-    { name: "Time Machine", href: "/time-machine", icon: Clock },
-    { name: "Profile Card", href: "/profile-card", icon: CreditCard },
-    { name: "Repo Health", href: "/repo-health", icon: HeartPulse },
+    { name: "Developer DNA", href: "/dna", icon: Dna, tier: 'pro' },
+    { name: "GitHub Wrapped", href: "/wrapped", icon: Gift, tier: 'pro' },
+    { name: "Achievements", href: "/achievements", icon: Medal, tier: 'pro' },
+    { name: "Compare Stats", href: "/compare", icon: Users, tier: 'pro' },
+    { name: "Time Machine", href: "/time-machine", icon: Clock, tier: 'premium' },
+    { name: "Profile Card", href: "/profile-card", icon: CreditCard, tier: 'premium' },
+    { name: "Repo Health", href: "/repo-health", icon: HeartPulse, tier: 'premium' },
     { name: "Analytics", href: "/analytics", icon: BarChart2 },
     { name: "Activity", href: "/activity", icon: Activity },
     { name: "Skills", href: "/skills", icon: Trophy },
@@ -22,6 +30,7 @@ const navigation = [
 export function Sidebar() {
     const location = useLocation();
     const { user, logout } = useAuth();
+    const { tier, isPro, isPremium } = useSubscription();
 
     const getInitials = (name: string) => {
         return name
@@ -30,6 +39,19 @@ export function Sidebar() {
             .join('')
             .toUpperCase()
             .slice(0, 2);
+    };
+
+    const isFeatureLocked = (item: NavItem) => {
+        if (!item.tier) return false;
+        if (item.tier === 'pro' && !isPro) return true;
+        if (item.tier === 'premium' && !isPremium) return true;
+        return false;
+    };
+
+    const getTierBadge = (itemTier?: 'pro' | 'premium') => {
+        if (itemTier === 'pro') return 'PRO';
+        if (itemTier === 'premium') return 'PREMIUM';
+        return null;
     };
 
     return (
@@ -46,24 +68,56 @@ export function Sidebar() {
                 </Link>
             </div>
 
+            {/* Subscription Badge */}
+            <div className="px-4 py-2">
+                <div className={cn(
+                    "px-3 py-1.5 rounded-lg text-center text-xs font-semibold",
+                    tier === 'premium' ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" :
+                        tier === 'pro' ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white" :
+                            "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                )}>
+                    {tier.toUpperCase()} Plan
+                </div>
+            </div>
+
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">
                 {navigation.map((item) => {
                     const Icon = item.icon;
                     const isActive = location.pathname === item.href;
+                    const locked = isFeatureLocked(item);
+                    const badge = getTierBadge(item.tier);
+
                     return (
                         <Link
                             key={item.name}
                             to={item.href}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
                                 isActive
                                     ? "bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400"
-                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                    : locked
+                                        ? "text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                             )}
                         >
                             <Icon className="h-5 w-5" />
-                            {item.name}
+                            <span className="flex-1">{item.name}</span>
+                            {locked && (
+                                <div className="flex items-center gap-1">
+                                    <Lock className="h-3 w-3 text-slate-400" />
+                                    {badge && (
+                                        <span className={cn(
+                                            "text-[10px] px-1.5 py-0.5 rounded font-semibold",
+                                            item.tier === 'premium'
+                                                ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
+                                                : "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                                        )}>
+                                            {badge}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
                         </Link>
                     );
                 })}
@@ -80,15 +134,15 @@ export function Sidebar() {
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{user?.name || 'User'}</p>
-                        <p className="text-xs text-slate-500 truncate">@{user?.github_username || 'user'}</p>
+                        <p className="text-sm font-medium truncate">{user?.name || user?.github_username}</p>
+                        <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                     </div>
                     <button
                         onClick={logout}
-                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                         title="Logout"
                     >
-                        <LogOut className="h-4 w-4 text-slate-500" />
+                        <LogOut className="h-4 w-4" />
                     </button>
                 </div>
             </div>

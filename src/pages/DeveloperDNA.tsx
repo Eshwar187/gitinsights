@@ -12,8 +12,17 @@ import {
 import LoadingSpinner from "../components/LoadingSpinner";
 import { DNAVisualization } from "../components/dna/DNAVisualization";
 import { Moon, Sun, Zap, Target, Code2, TrendingUp, Flame, Award } from "lucide-react";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 export default function DeveloperDNA() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('dna')) {
+        return <UpgradePrompt feature="dna" requiredTier="pro" />;
+    }
+
     const { data: scoreData, isLoading: scoresLoading } = useQuery({
         queryKey: ['dnaScores'],
         queryFn: getDeveloperScores

@@ -4,8 +4,17 @@ import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Clock, Code2, TrendingUp, Calendar, Rocket, Milestone } from "lucide-react";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 export default function TimeMachine() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('timeMachine')) {
+        return <UpgradePrompt feature="timeMachine" requiredTier="premium" />;
+    }
+
     const { data: scoreData, isLoading: scoresLoading } = useQuery({
         queryKey: ['timeMachineScores'],
         queryFn: getDeveloperScores

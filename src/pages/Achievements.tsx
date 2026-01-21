@@ -5,6 +5,8 @@ import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { Trophy, Lock, CheckCircle, Flame, Star, Code2, Moon, Zap, Users, GitFork, Calendar, TrendingUp } from "lucide-react";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 interface Achievement {
     id: string;
@@ -18,6 +20,13 @@ interface Achievement {
 }
 
 export default function Achievements() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('achievements')) {
+        return <UpgradePrompt feature="achievements" requiredTier="pro" />;
+    }
+
     const { data: scoreData, isLoading: scoresLoading } = useQuery({
         queryKey: ['achievementScores'],
         queryFn: getDeveloperScores
@@ -161,8 +170,8 @@ export default function Achievements() {
                     <Card
                         key={achievement.id}
                         className={`overflow-hidden transition-all ${achievement.earned
-                                ? 'ring-2 ring-yellow-400 dark:ring-yellow-500'
-                                : 'opacity-75 grayscale'
+                            ? 'ring-2 ring-yellow-400 dark:ring-yellow-500'
+                            : 'opacity-75 grayscale'
                             }`}
                     >
                         <CardContent className="p-4">

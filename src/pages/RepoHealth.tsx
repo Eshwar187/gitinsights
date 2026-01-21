@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card"
 import { getRepositories } from "../services/githubService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { HeartPulse, AlertTriangle, CheckCircle, XCircle, FileText, Shield, Code2, GitFork, Star, Eye } from "lucide-react";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 interface RepoHealthScore {
     name: string;
@@ -17,6 +19,13 @@ interface RepoHealthScore {
 }
 
 export default function RepoHealth() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('repoHealth')) {
+        return <UpgradePrompt feature="repoHealth" requiredTier="premium" />;
+    }
+
     const { data: reposData, isLoading } = useQuery({
         queryKey: ['repoHealthRepos'],
         queryFn: () => getRepositories(1, 50)

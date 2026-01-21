@@ -9,8 +9,17 @@ import { Download, Share2, Copy, Check } from "lucide-react";
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 export default function ProfileCard() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('profileCard')) {
+        return <UpgradePrompt feature="profileCard" requiredTier="premium" />;
+    }
+
     const { user } = useAuth();
     const [copied, setCopied] = useState(false);
     const [downloading, setDownloading] = useState(false);

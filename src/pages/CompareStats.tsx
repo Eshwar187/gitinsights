@@ -3,8 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card"
 import { getDeveloperScores } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { TrendingUp, TrendingDown, Minus, Trophy, Users, BarChart3, Target } from "lucide-react";
+import { useSubscription } from "../hooks/useSubscription";
+import { UpgradePrompt } from "../components/UpgradePrompt";
 
 export default function CompareStats() {
+    const { canAccess } = useSubscription();
+
+    // Check subscription access
+    if (!canAccess('compare')) {
+        return <UpgradePrompt feature="compare" requiredTier="pro" />;
+    }
+
     const { data: scoreData, isLoading } = useQuery({
         queryKey: ['compareScores'],
         queryFn: getDeveloperScores
@@ -148,7 +157,7 @@ export default function CompareStats() {
                                 <div className="relative h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                     <div
                                         className={`absolute left-0 top-0 h-full rounded-full ${isAbove ? 'bg-gradient-to-r from-green-400 to-green-500' :
-                                                'bg-gradient-to-r from-orange-400 to-orange-500'
+                                            'bg-gradient-to-r from-orange-400 to-orange-500'
                                             }`}
                                         style={{ width: `${Math.min(100, (comp.yours / comp.average) * 50)}%` }}
                                     />
