@@ -26,6 +26,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import RefundPolicy from "./pages/RefundPolicy";
 import ContactUs from "./pages/ContactUs";
+import AdminLogin from "./pages/Admin/AdminLogin";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { Toaster } from "react-hot-toast";
 
 // Create React Query client
@@ -58,6 +60,10 @@ function App() {
                 <Route path="/refund" element={<RefundPolicy />} />
                 <Route path="/contact" element={<ContactUs />} />
               </Route>
+
+              {/* Admin Routes - Hidden from main navigation */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
               {/* Protected Dashboard Routes */}
               <Route

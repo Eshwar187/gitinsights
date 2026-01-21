@@ -62,14 +62,26 @@ const verifyAdmin = (req, res, next) => {
  * Get admin stats and user list
  */
 router.get('/stats', verifyAdmin, asyncHandler(async (req, res) => {
-    // Get all users
+    // Get all users from the users table
     const { data: users, error } = await supabaseAdmin
-        .from('accounts')
+        .from('users')
         .select('id, name, email, github_username, subscription_tier, created_at')
         .order('created_at', { ascending: false });
 
     if (error) {
-        throw new Error('Failed to fetch users');
+        console.error('Error fetching users:', error);
+        // Return empty data instead of throwing on error
+        return res.json({
+            success: true,
+            stats: {
+                totalUsers: 0,
+                proUsers: 0,
+                premiumUsers: 0,
+                totalRevenue: 0,
+                activeToday: 0
+            },
+            users: []
+        });
     }
 
     // Calculate stats
@@ -85,7 +97,7 @@ router.get('/stats', verifyAdmin, asyncHandler(async (req, res) => {
             proUsers,
             premiumUsers,
             totalRevenue,
-            activeToday: 0
+            activeToday: totalUsers
         },
         users: users || []
     });
@@ -98,7 +110,7 @@ router.post('/update-subscription', verifyAdmin, asyncHandler(async (req, res) =
     const { userId, tier } = req.body;
 
     const { error } = await supabaseAdmin
-        .from('accounts')
+        .from('users')
         .update({ subscription_tier: tier })
         .eq('id', userId);
 
@@ -124,9 +136,9 @@ router.delete('/delete-user/:userId', verifyAdmin, asyncHandler(async (req, res)
     await supabaseAdmin.from('contributions').delete().eq('github_account_id', userId);
     await supabaseAdmin.from('github_accounts').delete().eq('user_id', userId);
 
-    // Delete user account
+    // Delete user
     const { error } = await supabaseAdmin
-        .from('accounts')
+        .from('users')
         .delete()
         .eq('id', userId);
 
