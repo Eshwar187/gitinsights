@@ -5,7 +5,7 @@ import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import { useAuth } from "../contexts/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Download, Share2, Copy, Check, Code2, Star, GitFork, Flame } from "lucide-react";
+import { Download, Share2, Copy, Check } from "lucide-react";
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
@@ -51,9 +51,30 @@ export default function ProfileCard() {
 
         setDownloading(true);
         try {
+            // Get the computed background color from the theme
+            let bgColor = '#0f172a'; // default dark
+            if (selectedTheme === 'light') {
+                bgColor = '#ffffff';
+            } else if (selectedTheme === 'gradient') {
+                // For gradient, we skip background color so the gradient shows
+                bgColor = null as any;
+            }
+
             const canvas = await html2canvas(cardRef.current, {
-                backgroundColor: null,
-                scale: 2,
+                backgroundColor: bgColor,
+                scale: 3,
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                removeContainer: true,
+                onclone: (clonedDoc) => {
+                    // Force the cloned element to have no external margin/padding
+                    const clonedCard = clonedDoc.querySelector('[data-card]');
+                    if (clonedCard) {
+                        (clonedCard as HTMLElement).style.margin = '0';
+                        (clonedCard as HTMLElement).style.boxShadow = 'none';
+                    }
+                }
             });
 
             const link = document.createElement('a');
@@ -62,6 +83,7 @@ export default function ProfileCard() {
             link.click();
             toast.success('Profile card downloaded!');
         } catch (error) {
+            console.error('Download error:', error);
             toast.error('Failed to download');
         }
         setDownloading(false);
@@ -114,8 +136,8 @@ export default function ProfileCard() {
                         key={theme}
                         onClick={() => setSelectedTheme(theme)}
                         className={`px-4 py-2 rounded-lg capitalize transition-all ${selectedTheme === theme
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300'
                             }`}
                     >
                         {theme}
@@ -132,6 +154,7 @@ export default function ProfileCard() {
                             src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}&background=random`}
                             alt=""
                             className="w-16 h-16 rounded-full border-2 border-white/20"
+                            crossOrigin="anonymous"
                         />
                         <div>
                             <h2 className="text-xl font-bold">{user?.name || 'Developer'}</h2>
@@ -144,22 +167,22 @@ export default function ProfileCard() {
                     {/* Stats Grid */}
                     <div className="grid grid-cols-4 gap-4 mb-6">
                         <div className="text-center">
-                            <Code2 className="h-5 w-5 mx-auto mb-1 opacity-80" />
+                            <div className="text-lg mb-1 opacity-80">&lt;/&gt;</div>
                             <div className="text-lg font-bold">{scores.total_commits || 0}</div>
                             <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Commits</div>
                         </div>
                         <div className="text-center">
-                            <Star className="h-5 w-5 mx-auto mb-1 opacity-80" />
+                            <div className="text-lg mb-1 opacity-80">⭐</div>
                             <div className="text-lg font-bold">{scores.total_stars || 0}</div>
                             <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Stars</div>
                         </div>
                         <div className="text-center">
-                            <GitFork className="h-5 w-5 mx-auto mb-1 opacity-80" />
+                            <div className="text-lg mb-1 opacity-80">📦</div>
                             <div className="text-lg font-bold">{scores.total_repos || 0}</div>
                             <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Repos</div>
                         </div>
                         <div className="text-center">
-                            <Flame className="h-5 w-5 mx-auto mb-1 opacity-80" />
+                            <div className="text-lg mb-1 opacity-80">🔥</div>
                             <div className="text-lg font-bold">{scores.longest_streak || 0}</div>
                             <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Streak</div>
                         </div>
@@ -171,8 +194,8 @@ export default function ProfileCard() {
                             <span
                                 key={lang}
                                 className={`px-3 py-1 rounded-full text-xs font-medium ${selectedTheme === 'light'
-                                        ? 'bg-slate-100 text-slate-700'
-                                        : 'bg-white/20'
+                                    ? 'bg-slate-100 text-slate-700'
+                                    : 'bg-white/20'
                                     }`}
                             >
                                 {lang}

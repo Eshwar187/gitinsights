@@ -104,8 +104,8 @@ export const syncData = asyncHandler(async (req, res) => {
             // Import decryption utility
             const { decrypt } = await import('../utils/encryption.js');
 
-            // Decrypt the access token
-            const accessToken = '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'; // TEMP TEST
+            // Decrypt the access token from database
+            const accessToken = decrypt(account.access_token);
 
             logger.info(`Starting sync for account: ${account.username}`, {
                 accountId: account.id,
@@ -134,6 +134,14 @@ export const syncData = asyncHandler(async (req, res) => {
             logger.info(`Fetching repositories for ${account.username}`);
             const repos = await githubService.fetchRepositories(accessToken, account.username);
             logger.info(`Found ${repos.length} repositories`);
+
+            // CRITICAL: Delete ALL existing repositories for this account before inserting new ones
+            // This ensures we don't accumulate old repos when switching GitHub accounts
+            logger.info(`Clearing old repositories for account ${account.id}`);
+            await supabaseAdmin
+                .from('repositories')
+                .delete()
+                .eq('github_account_id', account.id);
 
             // Store repositories
             let storedCount = 0;

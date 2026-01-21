@@ -121,7 +121,7 @@ export default function GitHubWrapped() {
             </div>
 
             {/* Main Stats Card - Downloadable */}
-            <div ref={cardRef}>
+            <div ref={cardRef} className="space-y-4 bg-white dark:bg-slate-950 p-4 rounded-2xl">
                 <Card className="overflow-hidden">
                     <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 p-8 text-white">
                         <div className="text-center space-y-6">
@@ -133,56 +133,61 @@ export default function GitHubWrapped() {
                         </div>
                     </div>
                 </Card>
-            </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-                <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-                    <CardContent className="p-6 text-center">
-                        <Calendar className="h-8 w-8 mx-auto mb-2 opacity-80" />
-                        <div className="text-3xl font-bold">{activeDays}</div>
-                        <div className="text-sm opacity-80">Active Days</div>
-                    </CardContent>
-                </Card>
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                    <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                        <CardContent className="p-6 text-center">
+                            <Calendar className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div className="text-3xl font-bold">{activeDays}</div>
+                            <div className="text-sm opacity-80">Active Days</div>
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white">
-                    <CardContent className="p-6 text-center">
-                        <Flame className="h-8 w-8 mx-auto mb-2 opacity-80" />
-                        <div className="text-3xl font-bold">{longestStreak}</div>
-                        <div className="text-sm opacity-80">Longest Streak</div>
-                    </CardContent>
-                </Card>
+                    <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white">
+                        <CardContent className="p-6 text-center">
+                            <Flame className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div className="text-3xl font-bold">{longestStreak}</div>
+                            <div className="text-sm opacity-80">Longest Streak</div>
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
-                    <CardContent className="p-6 text-center">
-                        <Star className="h-8 w-8 mx-auto mb-2 opacity-80" />
-                        <div className="text-3xl font-bold">{scores.total_stars || 0}</div>
-                        <div className="text-sm opacity-80">Stars Earned</div>
-                    </CardContent>
-                </Card>
+                    <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+                        <CardContent className="p-6 text-center">
+                            <Star className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div className="text-3xl font-bold">{scores.total_stars || 0}</div>
+                            <div className="text-sm opacity-80">Stars Earned</div>
+                        </CardContent>
+                    </Card>
 
-                <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
-                    <CardContent className="p-6 text-center">
-                        <GitFork className="h-8 w-8 mx-auto mb-2 opacity-80" />
-                        <div className="text-3xl font-bold">{totalRepos}</div>
-                        <div className="text-sm opacity-80">Repositories</div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Top Language Card */}
-            <Card className="overflow-hidden">
-                <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 text-white text-center">
-                    <Code2 className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
-                    <div className="text-lg opacity-80">Your Top Language</div>
-                    <div className="text-4xl font-bold mt-2">{topLang}</div>
-                    <div className="mt-4 text-sm opacity-60">
-                        You used {languages.length} different languages this year
-                    </div>
+                    <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                        <CardContent className="p-6 text-center">
+                            <GitFork className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div className="text-3xl font-bold">{totalRepos}</div>
+                            <div className="text-sm opacity-80">Repositories</div>
+                        </CardContent>
+                    </Card>
                 </div>
-            </Card>
 
-            {/* Fun Facts - REAL DATA */}
+                {/* Top Language Card */}
+                <Card className="overflow-hidden">
+                    <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 text-white text-center">
+                        <Code2 className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
+                        <div className="text-lg opacity-80">Your Top Language</div>
+                        <div className="text-4xl font-bold mt-2">{topLang}</div>
+                        <div className="mt-4 text-sm opacity-60">
+                            You used {languages.length} different languages this year
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Footer */}
+                <div className="text-center text-sm text-slate-400 pt-2">
+                    Generated by GitInsights
+                </div>
+            </div>
+
+            {/* Fun Facts - Outside downloadable area */}
             <Card>
                 <CardContent className="p-6">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">

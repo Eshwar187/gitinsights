@@ -19,6 +19,7 @@ import activityRoutes from './routes/activity.js';
 import skillsRoutes from './routes/skills.js';
 import mentorRoutes from './routes/mentor.js';
 import collabRoutes from './routes/collab.js';
+import adminRoutes from './routes/admin.js';
 
 // Load environment variables
 dotenv.config();
@@ -65,6 +66,7 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/mentor', mentorRoutes);
 app.use('/api/collab', collabRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
