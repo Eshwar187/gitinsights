@@ -79,6 +79,51 @@ export const syncData = asyncHandler(async (req, res) => {
     const userId = req.user.id;
     const { accountId } = req.body;
 
+    // ========== SYNC RATE LIMITING ==========
+    // Define sync limits per subscription tier
+    const SYNC_LIMITS = {
+        free: 1,
+        pro: 5,
+        premium: Infinity
+    };
+
+    // Get user's subscription tier and sync count
+    const { data: userData, error: userError } = await supabaseAdmin
+        .from('users')
+        .select('subscription_tier, syncs_today, last_sync_date')
+        .eq('id', userId)
+        .single();
+
+    if (userError) {
+        logger.error('Failed to fetch user data for sync limit check:', userError);
+        throw new Error('Failed to verify sync limits');
+    }
+
+    const tier = userData?.subscription_tier || 'free';
+    const syncLimit = SYNC_LIMITS[tier] || SYNC_LIMITS.free;
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+    // Reset sync count if it's a new day
+    let syncsToday = userData?.syncs_today || 0;
+    if (userData?.last_sync_date !== today) {
+        syncsToday = 0;
+    }
+
+    // Check if user has exceeded their daily limit
+    if (syncsToday >= syncLimit) {
+        logger.warn(`User ${userId} exceeded sync limit (${syncsToday}/${syncLimit})`);
+        return res.status(429).json({
+            success: false,
+            error: 'Daily sync limit reached',
+            message: `You've used all ${syncLimit} daily sync${syncLimit === 1 ? '' : 's'}. ${tier === 'free' ? 'Upgrade to Pro for 5 syncs/day!' : tier === 'pro' ? 'Upgrade to Premium for unlimited syncs!' : ''}`,
+            syncsToday,
+            syncLimit,
+            tier
+        });
+    }
+    // ========== END SYNC RATE LIMITING ==========
+
+
     // Get GitHub account
     let query = supabaseAdmin
         .from('github_accounts')
@@ -239,13 +284,22 @@ export const syncData = asyncHandler(async (req, res) => {
             await analyticsService.aggregateLanguageStats(account.id);
             await analyticsService.assignBadges(account.id);
 
-            // Update sync status
+            // Calculate PR stats
+            const prsMerged = pullRequests.filter(pr => pr.merged_at).length;
+            const prsOpened = pullRequests.length;
+
+            // Update sync status AND persist PR/Review stats
             await supabaseAdmin
                 .from('github_accounts')
                 .update({
                     sync_status: 'completed',
                     last_synced_at: new Date().toISOString(),
-                    sync_error: null
+                    sync_error: null,
+                    // Persist PR and Review stats (Premium feature)
+                    prs_merged: prsMerged,
+                    prs_opened: prsOpened,
+                    code_reviews: codeReviewsCount,
+                    issues_opened: issues.length
                 })
                 .eq('id', account.id);
 
@@ -256,13 +310,24 @@ export const syncData = asyncHandler(async (req, res) => {
                 stats: {
                     repositories: repos.length,
                     contributions: contributions.total,
-                    pullRequests: pullRequests.length,
+                    pullRequests: prsOpened,
+                    prsMerged: prsMerged,
                     issues: issues.length,
                     codeReviews: codeReviewsCount
                 }
             });
 
             logger.info(`Successfully synced GitHub account: ${account.username}`);
+
+            // ========== INCREMENT SYNC COUNT ==========
+            await supabaseAdmin
+                .from('users')
+                .update({
+                    syncs_today: syncsToday + 1,
+                    last_sync_date: today
+                })
+                .eq('id', userId);
+            logger.info(`Updated sync count for user ${userId}: ${syncsToday + 1}`);
         } catch (error) {
             logger.error(`Failed to sync GitHub account ${account.username}:`, error);
 

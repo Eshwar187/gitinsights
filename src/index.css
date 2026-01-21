@@ -43,5 +43,43 @@
 
 /* Selection Color */
 ::selection {
-  @apply bg-blue-500/30 text-blue-600 dark:text-blue-300;
+  @apply bg-green-500/30 text-green-500;
+}
+
+/* Developer Native Utilities */
+@layer utilities {
+  .bg-grid-pattern {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  .dark .bg-grid-pattern {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  .bg-grid-pattern-light {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  }
+
+  .font-mono-dense {
+    font-feature-settings: "tnum" on, "zero" on;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom Scrollbar for Code Blocks */
+.code-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-700/50 rounded-full;
 }

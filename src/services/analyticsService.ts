@@ -9,6 +9,24 @@ export const getDeveloperScores = async () => {
 };
 
 /**
+ * Get PR and Code Review stats (Premium feature)
+ */
+export const getPRStats = async () => {
+    const response = await api.get('/api/github/accounts');
+    // Return the first account's PR stats
+    const account = response.data?.data?.[0];
+    return {
+        success: true,
+        data: {
+            prs_merged: account?.prs_merged || 0,
+            prs_opened: account?.prs_opened || 0,
+            code_reviews: account?.code_reviews || 0,
+            issues_opened: account?.issues_opened || 0
+        }
+    };
+};
+
+/**
  * Get contribution heatmap
  */
 export const getHeatmap = async (year?: number) => {

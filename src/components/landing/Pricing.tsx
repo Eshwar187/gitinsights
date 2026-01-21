@@ -1,127 +1,169 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Info, ShieldCheck } from "lucide-react";
 import { Button } from "../ui/Button";
 import { PaymentModal } from "../modals/PaymentModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 const tiers = [
     {
-        name: 'Free',
-        id: 'tier-free',
-        href: '#',
+        name: 'Hobbyist',
+        id: 'tier-hobby',
         priceMonthly: '₹0',
-        description: 'Perfect for getting started.',
+        priceYearly: '₹0',
+        description: 'For personal projects and experiments.',
         features: [
-            'Dashboard & Analytics',
-            'GitHub Activity Heatmap',
-            'Repository Overview',
-            'Skills Visualization',
-            '1 Sync per Day',
-            'Community Support'
+            'Public Repositories Only',
+            '30-Day History',
+            'Basic Analytics',
+            'Community Support',
+            '1 Sync / Day'
         ],
         mostPopular: false,
+        buttonText: 'Start for Free',
+        buttonVariant: 'outline' as const
     },
     {
-        name: 'Pro',
+        name: 'Professional',
         id: 'tier-pro',
-        href: '#',
         priceMonthly: '₹199',
-        description: 'For serious developers.',
+        priceYearly: '₹1999',
+        description: 'For innovative developers building careers.',
         features: [
-            'Everything in Free',
-            '🧬 Developer DNA (3D Visualization)',
-            '🎄 GitHub Wrapped (Yearly Summary)',
-            '🏅 Achievements & Badges',
-            '📊 Compare Stats & Rankings',
-            '5 Syncs per Day',
-            'Priority Support',
+            'Unlimited Private Repositories',
+            'Unlimited History',
+            'Advanced Velocity Metrics',
+            'Developer DNA (3D)',
+            'Priority Email Support',
+            '5 Syncs / Day',
+            'Export Reports'
         ],
         mostPopular: true,
+        buttonText: 'Start Pro Trial',
+        buttonVariant: 'default' as const
     },
     {
-        name: 'Premium',
-        id: 'tier-premium',
-        href: '#',
+        name: 'Organization',
+        id: 'tier-org',
         priceMonthly: '₹499',
-        description: 'For power users.',
+        priceYearly: '₹4999',
+        description: 'For engineering teams and leaders.',
         features: [
-            'Everything in Pro',
-            '⏰ Time Machine (Coding Journey)',
-            '💳 Profile Card Generator',
-            '💚 Repository Health Score',
-            '♾️ Unlimited Syncs',
-            'Email Support',
+            'Team Velocity Dashboard',
+            'Repository Health Scores',
+            'SSO / SAML (Coming Soon)',
+            'Unlimited Syncs',
+            'Dedicated Success Manager',
+            'Custom Invoicing',
+            'On-Premise Option'
         ],
         mostPopular: false,
+        buttonText: 'Contact Sales',
+        buttonVariant: 'outline' as const
     },
 ];
 
 export function Pricing() {
     const [selectedPlan, setSelectedPlan] = useState<{ name: string, priceMonthly: string } | null>(null);
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
     return (
-        <div className="bg-slate-50 py-24 sm:py-32 dark:bg-slate-900">
+        <div className="bg-[#050505] py-24 sm:py-32 border-t border-[#30363d] relative overflow-hidden">
             <PaymentModal
                 isOpen={!!selectedPlan}
                 onClose={() => setSelectedPlan(null)}
                 plan={selectedPlan?.name || ""}
                 price={selectedPlan?.priceMonthly || ""}
             />
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                <div className="mx-auto max-w-4xl text-center">
-                    <h2 className="text-base font-semibold leading-7 text-blue-600">Pricing</h2>
-                    <p className="mt-2 text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
-                        Choose the right plan for you
+
+            <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+                <div className="mx-auto max-w-4xl text-center mb-16">
+                    <h2 className="text-base font-semibold leading-7 text-green-400 font-mono uppercase tracking-widest">Pricing</h2>
+                    <p className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl font-sans">
+                        Invest in your <span className="text-green-400">career velocity</span>
                     </p>
+                    <p className="mt-4 text-lg text-gray-400">
+                        Simple, transparent pricing. No credit card required to start.
+                    </p>
+
+                    {/* Billing Toggle */}
+                    <div className="mt-8 flex justify-center">
+                        <div className="flex items-center space-x-4 bg-[#161b22] px-1 p-1 rounded-lg border border-[#30363d]">
+                            <button
+                                onClick={() => setBillingCycle('monthly')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${billingCycle === 'monthly' ? 'bg-[#238636] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Monthly
+                            </button>
+                            <button
+                                onClick={() => setBillingCycle('yearly')}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors relative ${billingCycle === 'yearly' ? 'bg-[#238636] text-white shadow-sm' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Yearly
+                                <span className="absolute -top-3 -right-3 bg-yellow-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    -20%
+                                </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-slate-600 dark:text-slate-400">
-                    Start for free and upgrade as you grow. No hidden fees.
-                </p>
-                <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+
+                <div className="isolate mx-auto grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                     {tiers.map((tier) => (
                         <div
                             key={tier.id}
-                            className={`flex flex-col justify-between rounded-3xl bg-white dark:bg-slate-950 p-8 ring-1 ring-slate-200 dark:ring-slate-800 xl:p-10 ${tier.mostPopular ? 'ring-2 ring-blue-600 scale-105 z-10' : ''
+                            className={`rounded-2xl p-8 ring-1 transition-all ${tier.mostPopular
+                                    ? 'bg-[#161b22] ring-[#238636] shadow-xl shadow-green-900/20 scale-105 z-10'
+                                    : 'bg-[#0d1117] ring-[#30363d] hover:bg-[#161b22]'
                                 }`}
                         >
-                            <div>
-                                <div className="flex items-center justify-between gap-x-4">
-                                    <h3
-                                        id={tier.id}
-                                        className={`text-lg font-semibold leading-8 ${tier.mostPopular ? 'text-blue-600' : 'text-slate-900 dark:text-white'
-                                            }`}
-                                    >
-                                        {tier.name}
-                                    </h3>
-                                    {tier.mostPopular ? (
-                                        <span className="rounded-full bg-blue-600/10 px-2.5 py-1 text-xs font-semibold leading-5 text-blue-600">
-                                            Most popular
-                                        </span>
-                                    ) : null}
-                                </div>
-                                <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-400">{tier.description}</p>
-                                <p className="mt-6 flex items-baseline gap-x-1">
-                                    <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">{tier.priceMonthly}</span>
-                                    <span className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-400">/month</span>
-                                </p>
-                                <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                                    {tier.features.map((feature) => (
-                                        <li key={feature} className="flex gap-x-3">
-                                            <Check className="h-6 w-5 flex-none text-blue-600" aria-hidden="true" />
-                                            {feature}
-                                        </li>
-                                    ))}
-                                </ul>
+                            <div className="flex items-center justify-between gap-x-4">
+                                <h3 id={tier.id} className={`text-lg font-semibold leading-8 ${tier.mostPopular ? 'text-white' : 'text-gray-300'}`}>
+                                    {tier.name}
+                                </h3>
+                                {tier.mostPopular && (
+                                    <span className="inline-flex items-center rounded-full bg-green-400/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-400/20">
+                                        Suggested
+                                    </span>
+                                )}
                             </div>
+
+                            <p className="mt-4 text-sm leading-6 text-gray-400 h-12">{tier.description}</p>
+
+                            <p className="mt-6 flex items-baseline gap-x-1">
+                                <span className="text-4xl font-bold tracking-tight text-white">
+                                    {billingCycle === 'monthly' ? tier.priceMonthly : tier.priceYearly}
+                                </span>
+                                <span className="text-sm font-semibold leading-6 text-gray-500">/{billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                            </p>
+
                             <Button
-                                className={`mt-8 w-full ${tier.mostPopular ? '' : 'bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700'}`}
-                                variant={tier.mostPopular ? 'default' : 'outline'}
-                                aria-describedby={tier.id}
                                 onClick={() => setSelectedPlan(tier)}
+                                variant={tier.mostPopular ? "default" : "outline"}
+                                className={`mt-6 w-full ${tier.mostPopular
+                                        ? 'bg-[#238636] hover:bg-[#2ea043] text-white border-0'
+                                        : 'bg-transparent border-[#30363d] text-white hover:bg-[#21262d] hover:border-[#8b949e]'
+                                    }`}
                             >
-                                Get started
+                                {tier.buttonText}
                             </Button>
+
+                            <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-gray-400">
+                                {tier.features.map((feature) => (
+                                    <li key={feature} className="flex gap-x-3 text-gray-300">
+                                        <Check className="h-6 w-5 flex-none text-green-400" aria-hidden="true" />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     ))}
+                </div>
+
+                <div className="mt-16 text-center">
+                    <p className="text-sm text-gray-500 flex justify-center items-center gap-2">
+                        <ShieldCheck className="w-4 h-4" />
+                        Secure payment processing via Razorpay. cancel anytime.
+                    </p>
                 </div>
             </div>
         </div>

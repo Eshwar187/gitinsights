@@ -5,17 +5,20 @@ import { Pricing } from "../components/landing/Pricing";
 
 export default function LandingPage() {
     return (
-        <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
-            <header className="absolute inset-x-0 top-0 z-50">
+        <div className="flex flex-col min-h-screen bg-[#0d1117] text-white">
+            <header className="absolute inset-x-0 top-0 z-50 border-b border-white/5 bg-[#0d1117]/80 backdrop-blur-md">
                 <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                     <div className="flex lg:flex-1">
-                        <a href="#" className="-m-1.5 p-1.5 font-bold text-xl text-slate-900 dark:text-white">
-                            GitInsights
+                        <a href="#" className="-m-1.5 p-1.5 font-bold text-xl text-white font-mono flex items-center gap-2">
+                            <span className="text-green-500">➜</span> GitInsights
                         </a>
                     </div>
                     <div className="flex flex-1 justify-end gap-x-4">
                         <a href="http://localhost:5000/api/auth/github">
-                            <Button>Connect with GitHub</Button>
+                            <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-[#161b22]">Sign In</Button>
+                        </a>
+                        <a href="http://localhost:5000/api/auth/github">
+                            <Button className="bg-[#238636] text-white hover:bg-[#2ea043] border-none">Connect GitHub</Button>
                         </a>
                     </div>
                 </nav>
@@ -27,39 +30,38 @@ export default function LandingPage() {
                 <Pricing />
             </main>
 
-            <footer className="bg-slate-900 py-12 text-slate-400">
+            <footer className="bg-[#161b22] py-12 text-gray-400 border-t border-[#30363d]">
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="grid md:grid-cols-4 gap-8 mb-8">
                         <div>
-                            <h3 className="text-white font-bold text-lg mb-4">GitInsights</h3>
+                            <h3 className="text-white font-bold text-lg mb-4 font-mono">GitInsights</h3>
                             <p className="text-sm">Transform your GitHub activity into powerful insights and analytics.</p>
                         </div>
                         <div>
-                            <h4 className="text-white font-semibold mb-4">Legal</h4>
+                            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Legal</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                                <li><a href="/terms" className="hover:text-white transition-colors">Terms & Conditions</a></li>
-                                <li><a href="/refund" className="hover:text-white transition-colors">Refund Policy</a></li>
+                                <li><a href="/privacy" className="hover:text-green-400 transition-colors">Privacy Policy</a></li>
+                                <li><a href="/terms" className="hover:text-green-400 transition-colors">Terms & Conditions</a></li>
+                                <li><a href="/refund" className="hover:text-green-400 transition-colors">Refund Policy</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-white font-semibold mb-4">Support</h4>
+                            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Support</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="/contact" className="hover:text-white transition-colors">Contact Us</a></li>
-                                <li><a href="mailto:jeshwar.work@gmail.com" className="hover:text-white transition-colors">jeshwar.work@gmail.com</a></li>
-                                <li><a href="tel:+919761054596" className="hover:text-white transition-colors">+91 9761054596</a></li>
+                                <li><a href="/contact" className="hover:text-green-400 transition-colors">Contact Us</a></li>
+                                <li><a href="mailto:jeshwar.work@gmail.com" className="hover:text-green-400 transition-colors">jeshwar.work@gmail.com</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-white font-semibold mb-4">Connect</h4>
+                            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="https://github.com" className="hover:text-white transition-colors">GitHub</a></li>
-                                <li><a href="https://twitter.com" className="hover:text-white transition-colors">Twitter</a></li>
+                                <li><a href="https://github.com" className="hover:text-green-400 transition-colors">GitHub</a></li>
+                                <li><a href="https://twitter.com" className="hover:text-green-400 transition-colors">Twitter</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div className="border-t border-slate-800 pt-8 text-center text-sm">
-                        <p>&copy; 2026 GitInsights. All rights reserved.</p>
+                    <div className="border-t border-[#30363d] pt-8 text-center text-sm font-mono text-gray-500">
+                        <p>&copy; 2026 GitInsights. Open Source.</p>
                     </div>
                 </div>
             </footer>

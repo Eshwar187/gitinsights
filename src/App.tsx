@@ -97,8 +97,21 @@ function App() {
             toastOptions={{
               duration: 4000,
               style: {
-                background: 'var(--toast-bg)',
-                color: 'var(--toast-color)',
+                background: '#1e293b',
+                color: '#fff',
+                border: '1px solid #334155',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#22c55e',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
               },
             }}
           />

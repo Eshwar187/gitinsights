@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import {
     Users, CreditCard, TrendingUp, Settings, LogOut,
@@ -136,34 +135,48 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900">
+        <div className="min-h-screen bg-[#0f1117] text-slate-200 font-sans selection:bg-purple-500/30">
+            {/* Background Gradients */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px]" />
+                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px]" />
+            </div>
+
             {/* Header */}
-            <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                            <Shield className="h-5 w-5 text-white" />
+            <header className="relative z-10 border-b border-white/5 bg-[#0f1117]/80 backdrop-blur-xl sticky top-0">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                            <Shield className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-white">GitInsights Admin</h1>
-                            <p className="text-xs text-slate-400">Control Panel</p>
+                            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                                Admin Portal
+                            </h1>
+                            <p className="text-xs font-medium text-slate-500 tracking-wider uppercase">System Control</p>
                         </div>
                     </div>
+
                     <div className="flex items-center gap-4">
+                        <div className="h-8 px-4 flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            <span className="text-xs font-medium text-green-400">System Online</span>
+                        </div>
+                        <div className="h-8 w-[1px] bg-white/10" />
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={fetchData}
-                            className="text-slate-300 border-slate-600"
+                            className="text-slate-400 hover:text-white hover:bg-white/5"
                         >
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Refresh
                         </Button>
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
                             onClick={handleLogout}
-                            className="text-red-400 border-red-600 hover:bg-red-600/10"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
                             <LogOut className="h-4 w-4 mr-2" />
                             Logout
@@ -172,291 +185,252 @@ export default function AdminDashboard() {
                 </div>
             </header>
 
-            {/* Tabs */}
-            <div className="bg-slate-800/50 border-b border-slate-700">
-                <div className="max-w-7xl mx-auto px-6">
-                    <nav className="flex gap-6">
-                        {[
-                            { id: 'overview', label: 'Overview', icon: TrendingUp },
-                            { id: 'users', label: 'Users', icon: Users },
-                            { id: 'subscriptions', label: 'Subscriptions', icon: CreditCard },
-                            { id: 'settings', label: 'Settings', icon: Settings }
-                        ].map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setSelectedTab(tab.id as any)}
-                                className={`flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 transition-colors ${selectedTab === tab.id
-                                    ? 'border-orange-500 text-orange-400'
-                                    : 'border-transparent text-slate-400 hover:text-white'
-                                    }`}
-                            >
-                                <tab.icon className="h-4 w-4" />
-                                {tab.label}
-                            </button>
-                        ))}
-                    </nav>
-                </div>
-            </div>
+            {/* Main Content */}
+            <main className="relative z-10 max-w-7xl mx-auto p-6 space-y-8">
+                {/* Navigation Tabs */}
+                <nav className="flex items-center gap-2 p-1 bg-white/5 rounded-2xl border border-white/5 w-fit">
+                    {[
+                        { id: 'overview', label: 'Overview', icon: TrendingUp },
+                        { id: 'users', label: 'User Management', icon: Users },
+                        { id: 'subscriptions', label: 'Revenue & Plans', icon: CreditCard },
+                        { id: 'settings', label: 'System Settings', icon: Settings }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setSelectedTab(tab.id as any)}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${selectedTab === tab.id
+                                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-purple-500/25 ring-1 ring-white/20'
+                                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            <tab.icon className="h-4 w-4" />
+                            {tab.label}
+                        </button>
+                    ))}
+                </nav>
 
-            {/* Content */}
-            <main className="max-w-7xl mx-auto p-6">
                 {selectedTab === 'overview' && (
-                    <div className="space-y-6">
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500 shadow-lg">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-blue-100">Total Users</p>
-                                            <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
-                                        </div>
-                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                            <Users className="h-6 w-6 text-white" />
-                                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {[
+                            { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'blue', subtext: '+12% from last month' },
+                            { label: 'Pro Members', value: stats.proUsers, icon: UserCheck, color: 'purple', subtext: 'Growing steadily' },
+                            { label: 'Premium Elite', value: stats.premiumUsers, icon: CreditCard, color: 'orange', subtext: 'High value customers' },
+                            { label: 'Monthly Revenue', value: `₹${stats.totalRevenue}`, icon: DollarSign, color: 'emerald', subtext: ' Recurring revenue' }
+                        ].map((stat, i) => (
+                            <div key={i} className="group relative overflow-hidden bg-[#1a1d24] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+                                <div className={`absolute top-0 right-0 w-32 h-32 bg-${stat.color}-500/5 rounded-full blur-[50px] group-hover:bg-${stat.color}-500/10 transition-all`} />
+                                <div className="relative z-10">
+                                    <div className={`w-12 h-12 rounded-xl bg-${stat.color}-500/10 flex items-center justify-center mb-4 text-${stat.color}-400 group-hover:scale-110 transition-transform duration-300`}>
+                                        <stat.icon className="h-6 w-6" />
                                     </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-500 shadow-lg">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-purple-100">Pro Users</p>
-                                            <p className="text-3xl font-bold text-white">{stats.proUsers}</p>
-                                        </div>
-                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                            <UserCheck className="h-6 w-6 text-white" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-gradient-to-br from-orange-500 to-red-600 border-orange-400 shadow-lg">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-orange-100">Premium Users</p>
-                                            <p className="text-3xl font-bold text-white">{stats.premiumUsers}</p>
-                                        </div>
-                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                            <CreditCard className="h-6 w-6 text-white" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-400 shadow-lg">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm text-emerald-100">Monthly Revenue</p>
-                                            <p className="text-3xl font-bold text-white">₹{stats.totalRevenue}</p>
-                                        </div>
-                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                                            <DollarSign className="h-6 w-6 text-white" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Recent Users */}
-                        <Card className="bg-slate-800 border-slate-700">
-                            <CardHeader>
-                                <CardTitle className="text-white">Recent Users</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {users.slice(0, 5).map((user) => (
-                                        <div key={user.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                                                    {user.name?.[0] || 'U'}
-                                                </div>
-                                                <div>
-                                                    <p className="text-white font-medium">{user.name || user.github_username}</p>
-                                                    <p className="text-sm text-slate-400">{user.email}</p>
-                                                </div>
-                                            </div>
-                                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.subscription_tier === 'premium' ? 'bg-orange-500/20 text-orange-400' :
-                                                user.subscription_tier === 'pro' ? 'bg-purple-500/20 text-purple-400' :
-                                                    'bg-slate-600 text-slate-300'
-                                                }`}>
-                                                {user.subscription_tier || 'free'}
-                                            </span>
-                                        </div>
-                                    ))}
+                                    <h3 className="text-slate-400 text-sm font-medium">{stat.label}</h3>
+                                    <div className="text-3xl font-bold text-white mt-1 group-hover:tracking-wide transition-all">{stat.value}</div>
+                                    <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                                        <TrendingUp className="h-3 w-3 text-green-400" />
+                                        {stat.subtext}
+                                    </p>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        ))}
                     </div>
                 )}
 
                 {selectedTab === 'users' && (
-                    <div className="space-y-6">
-                        {/* Search */}
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Search users by name, email, or username..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder:text-slate-500"
-                            />
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {/* Search Bar */}
+                        <div className="relative group">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl opacity-20 group-hover:opacity-40 transition duration-300 blur-sm" />
+                            <div className="relative flex items-center bg-[#1a1d24] rounded-xl border border-white/10 p-2">
+                                <Search className="h-5 w-5 text-slate-400 ml-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Search users..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-slate-500 h-10 px-4"
+                                />
+                                <div className="px-3 py-1.5 bg-white/5 rounded-lg border border-white/5">
+                                    <span className="text-xs text-slate-400 font-medium">{filteredUsers.length} Results</span>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Users Table */}
-                        <Card className="bg-slate-800 border-slate-700 overflow-hidden">
+                        <div className="bg-[#1a1d24]/80 backdrop-blur-sm border border-white/5 rounded-2xl overflow-hidden shadow-xl">
                             <div className="overflow-x-auto">
                                 <table className="w-full">
-                                    <thead className="bg-slate-700/50">
-                                        <tr>
-                                            <th className="text-left px-4 py-3 text-sm font-medium text-slate-300">User</th>
-                                            <th className="text-left px-4 py-3 text-sm font-medium text-slate-300">GitHub</th>
-                                            <th className="text-left px-4 py-3 text-sm font-medium text-slate-300">Plan</th>
-                                            <th className="text-left px-4 py-3 text-sm font-medium text-slate-300">Joined</th>
-                                            <th className="text-left px-4 py-3 text-sm font-medium text-slate-300">Actions</th>
+                                    <thead>
+                                        <tr className="border-b border-white/5 bg-white/[0.02]">
+                                            <th className="text-left py-5 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">User Profile</th>
+                                            <th className="text-left py-5 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">GitHub Identity</th>
+                                            <th className="text-left py-5 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Plan & Status</th>
+                                            <th className="text-left py-5 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Joined Date</th>
+                                            <th className="text-right py-5 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-700">
+                                    <tbody className="divide-y divide-white/5">
                                         {filteredUsers.map((user) => (
-                                            <tr key={user.id} className="hover:bg-slate-700/30">
-                                                <td className="px-4 py-3">
-                                                    <div>
-                                                        <p className="text-white font-medium">{user.name || 'Unknown'}</p>
-                                                        <p className="text-sm text-slate-400">{user.email}</p>
+                                            <tr key={user.id} className="group hover:bg-white/[0.02] transition-colors">
+                                                <td className="py-4 px-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-600 p-[2px] ring-2 ring-transparent group-hover:ring-blue-500/50 transition-all">
+                                                            <div className="w-full h-full rounded-full bg-[#1a1d24] flex items-center justify-center overflow-hidden">
+                                                                <span className="text-sm font-bold text-white max-w-full truncate px-1">
+                                                                    {user.name?.[0]?.toUpperCase() || 'U'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-semibold text-white group-hover:text-blue-400 transition-colors">{user.name || 'Unknown User'}</div>
+                                                            <div className="text-xs text-slate-500">{user.email}</div>
+                                                        </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-slate-300">@{user.github_username}</td>
-                                                <td className="px-4 py-3">
-                                                    <select
-                                                        value={user.subscription_tier || 'free'}
-                                                        onChange={(e) => handleUpdateSubscription(user.id, e.target.value)}
-                                                        className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm text-white"
+                                                <td className="py-4 px-6">
+                                                    <a
+                                                        href={`https://github.com/${user.github_username}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-2 px-3 py-1 bg-[#0d1117] border border-white/10 rounded-full text-xs font-medium text-slate-300 hover:border-white/30 hover:text-white transition-all"
                                                     >
-                                                        <option value="free">Free</option>
-                                                        <option value="pro">Pro</option>
-                                                        <option value="premium">Premium</option>
-                                                    </select>
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                                        @{user.github_username}
+                                                    </a>
                                                 </td>
-                                                <td className="px-4 py-3 text-slate-400 text-sm">
-                                                    {new Date(user.created_at).toLocaleDateString()}
+                                                <td className="py-4 px-6">
+                                                    <div className="relative">
+                                                        <select
+                                                            value={user.subscription_tier || 'free'}
+                                                            onChange={(e) => handleUpdateSubscription(user.id, e.target.value)}
+                                                            className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1a1d24] transition-all ${user.subscription_tier === 'premium' ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white ring-orange-500' :
+                                                                user.subscription_tier === 'pro' ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white ring-purple-500' :
+                                                                    'bg-slate-700 text-slate-300 hover:bg-slate-600 ring-slate-500'
+                                                                }`}
+                                                        >
+                                                            <option value="free" className="text-slate-900">Free Tier</option>
+                                                            <option value="pro" className="text-slate-900">Pro Plan</option>
+                                                            <option value="premium" className="text-slate-900">Premium</option>
+                                                        </select>
+                                                        <ChevronDown className={`absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${['premium', 'pro'].includes(user.subscription_tier) ? 'text-white/80' : 'text-slate-400'
+                                                            }`} />
+                                                    </div>
                                                 </td>
-                                                <td className="px-4 py-3">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
+                                                <td className="py-4 px-6">
+                                                    <div className="text-sm text-slate-400 font-medium tabular-nums">
+                                                        {new Date(user.created_at).toLocaleDateString(undefined, {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-6 text-right">
+                                                    <button
                                                         onClick={() => handleDeleteUser(user.id)}
-                                                        className="text-red-400 border-red-600 hover:bg-red-600/10"
+                                                        className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all transform hover:scale-105 active:scale-95"
+                                                        title="Delete User"
                                                     >
-                                                        Delete
-                                                    </Button>
+                                                        <LogOut className="h-4 w-4" />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
-                        </Card>
+                        </div>
                     </div>
                 )}
 
                 {selectedTab === 'subscriptions' && (
-                    <div className="space-y-6">
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <Card className="bg-slate-800 border-slate-700">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <div className="w-3 h-3 bg-slate-400 rounded-full" />
+                            <div className="group relative overflow-hidden bg-[#1a1d24] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-500/5 rounded-full blur-[50px] group-hover:bg-slate-500/10 transition-all" />
+                                <div className="relative z-10">
+                                    <h3 className="text-slate-400 text-sm font-medium flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-slate-400 rounded-full" />
                                         Free Users
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-4xl font-bold text-white">
+                                    </h3>
+                                    <div className="text-4xl font-bold text-white mt-2 group-hover:tracking-wide transition-all">
                                         {stats.totalUsers - stats.proUsers - stats.premiumUsers}
-                                    </p>
-                                    <p className="text-sm text-slate-400 mt-2">₹0 revenue</p>
-                                </CardContent>
-                            </Card>
+                                    </div>
+                                    <p className="text-xs text-slate-500 mt-2">No direct revenue</p>
+                                </div>
+                            </div>
 
-                            <Card className="bg-slate-800 border-slate-700">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <div className="w-3 h-3 bg-purple-500 rounded-full" />
+                            <div className="group relative overflow-hidden bg-[#1a1d24] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-[50px] group-hover:bg-purple-500/10 transition-all" />
+                                <div className="relative z-10">
+                                    <h3 className="text-slate-400 text-sm font-medium flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-purple-500 rounded-full" />
                                         Pro Users
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-4xl font-bold text-white">{stats.proUsers}</p>
-                                    <p className="text-sm text-slate-400 mt-2">₹{stats.proUsers * 199}/mo</p>
-                                </CardContent>
-                            </Card>
+                                    </h3>
+                                    <div className="text-4xl font-bold text-white mt-2 group-hover:tracking-wide transition-all">{stats.proUsers}</div>
+                                    <p className="text-xs text-slate-500 mt-2">Est. ₹{stats.proUsers * 199}/mo</p>
+                                </div>
+                            </div>
 
-                            <Card className="bg-slate-800 border-slate-700">
-                                <CardHeader>
-                                    <CardTitle className="text-white flex items-center gap-2">
-                                        <div className="w-3 h-3 bg-orange-500 rounded-full" />
+                            <div className="group relative overflow-hidden bg-[#1a1d24] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all hover:shadow-2xl hover:shadow-blue-500/10">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-[50px] group-hover:bg-orange-500/10 transition-all" />
+                                <div className="relative z-10">
+                                    <h3 className="text-slate-400 text-sm font-medium flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-orange-500 rounded-full" />
                                         Premium Users
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-4xl font-bold text-white">{stats.premiumUsers}</p>
-                                    <p className="text-sm text-slate-400 mt-2">₹{stats.premiumUsers * 499}/mo</p>
-                                </CardContent>
-                            </Card>
+                                    </h3>
+                                    <div className="text-4xl font-bold text-white mt-2 group-hover:tracking-wide transition-all">{stats.premiumUsers}</div>
+                                    <p className="text-xs text-slate-500 mt-2">Est. ₹{stats.premiumUsers * 499}/mo</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {selectedTab === 'settings' && (
-                    <div className="space-y-6">
-                        <Card className="bg-slate-800 border-slate-700">
-                            <CardHeader>
-                                <CardTitle className="text-white">System Settings</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-[#1a1d24]/80 backdrop-blur-sm border border-white/5 rounded-2xl shadow-xl p-6">
+                            <h2 className="text-xl font-bold text-white mb-5">System Configuration</h2>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5">
                                     <div className="flex items-center gap-3">
                                         <Database className="h-5 w-5 text-blue-400" />
                                         <div>
-                                            <p className="text-white font-medium">Database Status</p>
-                                            <p className="text-sm text-slate-400">Supabase connection</p>
+                                            <p className="text-white font-medium">Database Connection</p>
+                                            <p className="text-sm text-slate-500">Primary data storage via Supabase</p>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                        Connected
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <Activity className="h-5 w-5 text-purple-400" />
-                                        <div>
-                                            <p className="text-white font-medium">API Status</p>
-                                            <p className="text-sm text-slate-400">Backend services</p>
-                                        </div>
-                                    </div>
-                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
+                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">
                                         Operational
                                     </span>
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <Activity className="h-5 w-5 text-purple-400" />
+                                        <div>
+                                            <p className="text-white font-medium">API Gateway Status</p>
+                                            <p className="text-sm text-slate-500">All microservices are responsive</p>
+                                        </div>
+                                    </div>
+                                    <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">
+                                        Active
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5">
                                     <div className="flex items-center gap-3">
                                         <AlertTriangle className="h-5 w-5 text-orange-400" />
                                         <div>
                                             <p className="text-white font-medium">Maintenance Mode</p>
-                                            <p className="text-sm text-slate-400">Disable user access</p>
+                                            <p className="text-sm text-slate-500">Temporarily disable user access for updates</p>
                                         </div>
                                     </div>
-                                    <span className="px-3 py-1 bg-slate-600 text-slate-300 rounded-full text-sm">
-                                        Off
-                                    </span>
+                                    <button className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-600 transition-colors">
+                                        Activate
+                                    </button>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
                     </div>
                 )}
             </main>
