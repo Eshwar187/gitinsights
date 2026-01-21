@@ -200,6 +200,7 @@ export const webhook = asyncHandler(async (req, res) => {
 
 /**
  * Simple upgrade subscription (for demo/testing without Razorpay)
+ * When Razorpay is configured, this will be replaced with actual payment flow
  */
 export const upgradeSubscription = asyncHandler(async (req, res) => {
     const { tier } = req.body;
@@ -211,10 +212,13 @@ export const upgradeSubscription = asyncHandler(async (req, res) => {
         throw new ValidationError('Invalid subscription tier');
     }
 
-    // Update user's subscription tier in accounts table
+    // Update user's subscription tier in users table
     const { error } = await supabaseAdmin
-        .from('accounts')
-        .update({ subscription_tier: tier })
+        .from('users')
+        .update({
+            subscription_tier: tier,
+            subscription_status: tier === 'free' ? 'inactive' : 'active'
+        })
         .eq('id', userId);
 
     if (error) {

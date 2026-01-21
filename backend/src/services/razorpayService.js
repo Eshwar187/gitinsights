@@ -4,16 +4,34 @@ import supabaseAdmin from '../config/database.js';
 import logger from '../utils/logger.js';
 import { ExternalServiceError } from '../utils/errors.js';
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// Check if Razorpay keys are available
+const RAZORPAY_CONFIGURED = !!(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+
+// Initialize Razorpay only if keys are present
+let razorpay = null;
+if (RAZORPAY_CONFIGURED) {
+    razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+    logger.info('Razorpay initialized with provided API keys');
+} else {
+    logger.warn('Razorpay API keys not configured - running in demo mode');
+}
+
+/**
+ * Check if Razorpay is configured
+ */
+export const isRazorpayConfigured = () => RAZORPAY_CONFIGURED;
 
 /**
  * Create Razorpay subscription
  */
 export const createSubscription = async (userId, planId, billingCycle) => {
+    if (!razorpay) {
+        throw new ExternalServiceError('Payment gateway not configured. Please contact support.');
+    }
+
     try {
         // Get plan details
         const { data: plan } = await supabaseAdmin
@@ -56,6 +74,10 @@ export const createSubscription = async (userId, planId, billingCycle) => {
  * Verify payment signature
  */
 export const verifyPayment = (orderId, paymentId, signature) => {
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+        return false;
+    }
+
     const text = `${orderId}|${paymentId}`;
     const generated_signature = crypto
         .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)

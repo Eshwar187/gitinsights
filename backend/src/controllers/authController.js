@@ -390,7 +390,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 
     res.json({
         success: true,
-        data: user
+        user: user  // Changed from 'data' to 'user' for frontend compatibility
     });
 });
 

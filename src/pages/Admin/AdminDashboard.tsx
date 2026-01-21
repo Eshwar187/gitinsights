@@ -186,8 +186,8 @@ export default function AdminDashboard() {
                                 key={tab.id}
                                 onClick={() => setSelectedTab(tab.id as any)}
                                 className={`flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 transition-colors ${selectedTab === tab.id
-                                        ? 'border-orange-500 text-orange-400'
-                                        : 'border-transparent text-slate-400 hover:text-white'
+                                    ? 'border-orange-500 text-orange-400'
+                                    : 'border-transparent text-slate-400 hover:text-white'
                                     }`}
                             >
                                 <tab.icon className="h-4 w-4" />
@@ -204,57 +204,57 @@ export default function AdminDashboard() {
                     <div className="space-y-6">
                         {/* Stats Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <Card className="bg-slate-800 border-slate-700">
+                            <Card className="bg-gradient-to-br from-blue-600 to-blue-800 border-blue-500 shadow-lg">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-slate-400">Total Users</p>
+                                            <p className="text-sm text-blue-100">Total Users</p>
                                             <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
                                         </div>
-                                        <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                                            <Users className="h-6 w-6 text-blue-400" />
+                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                            <Users className="h-6 w-6 text-white" />
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="bg-slate-800 border-slate-700">
+                            <Card className="bg-gradient-to-br from-purple-600 to-purple-800 border-purple-500 shadow-lg">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-slate-400">Pro Users</p>
+                                            <p className="text-sm text-purple-100">Pro Users</p>
                                             <p className="text-3xl font-bold text-white">{stats.proUsers}</p>
                                         </div>
-                                        <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                                            <UserCheck className="h-6 w-6 text-purple-400" />
+                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                            <UserCheck className="h-6 w-6 text-white" />
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="bg-slate-800 border-slate-700">
+                            <Card className="bg-gradient-to-br from-orange-500 to-red-600 border-orange-400 shadow-lg">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-slate-400">Premium Users</p>
+                                            <p className="text-sm text-orange-100">Premium Users</p>
                                             <p className="text-3xl font-bold text-white">{stats.premiumUsers}</p>
                                         </div>
-                                        <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center">
-                                            <CreditCard className="h-6 w-6 text-orange-400" />
+                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                            <CreditCard className="h-6 w-6 text-white" />
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="bg-slate-800 border-slate-700">
+                            <Card className="bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-400 shadow-lg">
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm text-slate-400">Monthly Revenue</p>
+                                            <p className="text-sm text-emerald-100">Monthly Revenue</p>
                                             <p className="text-3xl font-bold text-white">₹{stats.totalRevenue}</p>
                                         </div>
-                                        <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                                            <DollarSign className="h-6 w-6 text-green-400" />
+                                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                            <DollarSign className="h-6 w-6 text-white" />
                                         </div>
                                     </div>
                                 </CardContent>
@@ -280,8 +280,8 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.subscription_tier === 'premium' ? 'bg-orange-500/20 text-orange-400' :
-                                                    user.subscription_tier === 'pro' ? 'bg-purple-500/20 text-purple-400' :
-                                                        'bg-slate-600 text-slate-300'
+                                                user.subscription_tier === 'pro' ? 'bg-purple-500/20 text-purple-400' :
+                                                    'bg-slate-600 text-slate-300'
                                                 }`}>
                                                 {user.subscription_tier || 'free'}
                                             </span>

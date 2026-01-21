@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 
 export default function AuthCallback() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -21,31 +23,17 @@ export default function AuthCallback() {
 
             if (token && refreshToken) {
                 try {
-                    // Fetch user data with the token
-                    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    // Store refresh token
+                    localStorage.setItem('refreshToken', refreshToken);
 
-                    const data = await response.json();
+                    // Login with token - this fetches user from database
+                    await login(token);
 
-                    if (data.success) {
-                        // Store tokens and user data
-                        localStorage.setItem('token', token);
-                        localStorage.setItem('refreshToken', refreshToken);
-                        localStorage.setItem('user', JSON.stringify(data.data));
+                    // Clear lastSync to trigger fresh sync on Dashboard
+                    localStorage.removeItem('lastGitHubSync');
 
-                        // Clear lastSync to trigger fresh sync on Dashboard
-                        localStorage.removeItem('lastGitHubSync');
-
-                        toast.success('Successfully connected with GitHub!');
-
-                        // Reload to trigger AuthContext to pick up the new auth state
-                        window.location.href = '/dashboard';
-                    } else {
-                        throw new Error(data.error || 'Failed to fetch user data');
-                    }
+                    toast.success('Successfully connected with GitHub!');
+                    navigate('/dashboard');
                 } catch (error) {
                     console.error('Auth callback error:', error);
                     toast.error('Authentication failed. Please try again.');
@@ -58,7 +46,7 @@ export default function AuthCallback() {
         };
 
         handleCallback();
-    }, [searchParams, navigate]);
+    }, [searchParams, navigate, login]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">

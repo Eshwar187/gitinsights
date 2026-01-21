@@ -16,7 +16,7 @@ interface LoginByUsernameResponse {
 }
 
 /**
- * Check if GitHub username exists and return user data
+ * Check if GitHub username exists and return token
  */
 export const loginByUsername = async (username: string): Promise<LoginByUsernameResponse> => {
     const response = await api.post<LoginByUsernameResponse>('/api/auth/login-by-username', {
@@ -42,7 +42,7 @@ export const handleGitHubCallback = async (code: string) => {
 };
 
 /**
- * Get current user profile
+ * Get current user profile from database
  */
 export const getCurrentUser = async () => {
     const response = await api.get('/api/auth/me');
@@ -50,11 +50,10 @@ export const getCurrentUser = async () => {
 };
 
 /**
- * Logout user
+ * Logout user - only clear token, no user data in localStorage
  */
-export const logout = async () => {
-    // Just clear local storage (no backend endpoint needed for JWT)
+export const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
     window.location.href = '/auth/login';
 };

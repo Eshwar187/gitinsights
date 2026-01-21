@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
@@ -12,7 +12,12 @@ export default function Settings() {
     const [activeTab, setActiveTab] = useState("profile");
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<{ name: string, price: string } | null>(null);
-    const { user } = useAuth();
+    const { user, refreshUser } = useAuth();
+
+    // Refresh user data on mount to get latest subscription status
+    useEffect(() => {
+        refreshUser();
+    }, []);
 
     const tabs = [
         { id: "profile", label: "Profile" },
