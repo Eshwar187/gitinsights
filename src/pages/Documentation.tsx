@@ -68,7 +68,7 @@ export default function Documentation() {
         },
         {
             name: "Premium",
-            price: "₹399/month",
+            price: "₹499/month",
             color: "text-purple-400",
             features: [
                 "Everything in Pro",
