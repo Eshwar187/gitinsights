@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 interface User {
     id: string;
     name: string;
@@ -52,7 +54,7 @@ export default function AdminDashboard() {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('/api/admin/stats', {
+            const response = await fetch(`${API_URL}/api/admin/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -77,7 +79,7 @@ export default function AdminDashboard() {
     const handleUpdateSubscription = async (userId: string, tier: string) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('/api/admin/update-subscription', {
+            const response = await fetch(`${API_URL}/api/admin/update-subscription`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -105,7 +107,7 @@ export default function AdminDashboard() {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`/api/admin/delete-user/${userId}`, {
+            const response = await fetch(`${API_URL}/api/admin/delete-user/${userId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
