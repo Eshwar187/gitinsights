@@ -26,6 +26,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import RefundPolicy from "./pages/RefundPolicy";
 import ContactUs from "./pages/ContactUs";
+import Documentation from "./pages/Documentation";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import { Toaster } from "react-hot-toast";
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/terms" element={<TermsConditions />} />
                 <Route path="/refund" element={<RefundPolicy />} />
                 <Route path="/contact" element={<ContactUs />} />
+                <Route path="/docs" element={<Documentation />} />
               </Route>
 
               {/* Admin Routes - Hidden from main navigation */}

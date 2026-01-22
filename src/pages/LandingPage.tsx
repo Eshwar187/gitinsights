@@ -90,8 +90,8 @@ export default function LandingPage() {
                         <div>
                             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h4>
                             <ul className="space-y-2 text-sm">
-                                <li><a href="https://github.com" className="hover:text-green-400 transition-colors">GitHub</a></li>
-                                <li><a href="https://twitter.com" className="hover:text-green-400 transition-colors">Twitter</a></li>
+                                <li><a href="https://github.com/Eshwar187" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">GitHub</a></li>
+                                <li><a href="https://www.linkedin.com/in/j-eshwar-7b8854289/" target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">LinkedIn</a></li>
                             </ul>
                         </div>
                     </div>

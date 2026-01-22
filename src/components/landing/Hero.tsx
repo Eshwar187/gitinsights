@@ -59,15 +59,17 @@ export function Hero() {
                                 transition={{ duration: 0.5, delay: 0.3 }}
                                 className="mt-6 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-x-6"
                             >
-                                <a href="http://localhost:5000/api/auth/github" className="block">
+                                <a href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/github`} className="block">
                                     <Button size="lg" className="w-full sm:w-auto h-12 px-6 sm:px-8 text-base font-semibold rounded-md bg-[#238636] text-white hover:bg-[#2ea043] shadow-sm border border-[rgba(240,246,252,0.1)] transition-all">
                                         <Github className="mr-2 h-5 w-5" />
                                         Sign in with GitHub
                                     </Button>
                                 </a>
-                                <Button variant="ghost" className="h-12 px-6 rounded-md text-gray-300 hover:text-white hover:bg-[#161b22] border border-gray-700 sm:border-transparent sm:hover:border-gray-700">
-                                    View Documentation
-                                </Button>
+                                <a href="/docs">
+                                    <Button variant="ghost" className="h-12 px-6 rounded-md text-gray-300 hover:text-white hover:bg-[#161b22] border border-gray-700 sm:border-transparent sm:hover:border-gray-700">
+                                        View Documentation
+                                    </Button>
+                                </a>
                             </motion.div>
                         </div>
 
