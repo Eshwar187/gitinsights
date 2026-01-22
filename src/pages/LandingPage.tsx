@@ -31,13 +31,10 @@ export default function LandingPage() {
                         </button>
                     </div>
 
-                    {/* Desktop navigation */}
+                    {/* Desktop navigation - removed, using hero buttons instead */}
                     <div className="hidden lg:flex flex-1 justify-end gap-x-4">
-                        <a href="http://localhost:5000/api/auth/github">
+                        <a href="/auth/login">
                             <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-[#161b22]">Sign In</Button>
-                        </a>
-                        <a href="http://localhost:5000/api/auth/github">
-                            <Button className="bg-[#238636] text-white hover:bg-[#2ea043] border-none">Connect GitHub</Button>
                         </a>
                     </div>
                 </nav>
@@ -45,14 +42,9 @@ export default function LandingPage() {
                 {/* Mobile menu */}
                 {mobileMenuOpen && (
                     <div className="lg:hidden px-4 pb-4 space-y-2 bg-[#0d1117] border-t border-white/5">
-                        <a href="http://localhost:5000/api/auth/github" className="block">
+                        <a href="/auth/login" className="block">
                             <Button variant="outline" className="w-full border-gray-700 text-gray-300 hover:text-white hover:bg-[#161b22]">
                                 Sign In
-                            </Button>
-                        </a>
-                        <a href="http://localhost:5000/api/auth/github" className="block">
-                            <Button className="w-full bg-[#238636] text-white hover:bg-[#2ea043] border-none">
-                                Connect GitHub
                             </Button>
                         </a>
                     </div>
