@@ -17,7 +17,7 @@ export function AIInsightsModal({ isOpen, onClose }: AIInsightsModalProps) {
     const queryClient = useQueryClient();
     const isPro = tier === 'pro' || tier === 'premium';
 
-    const { data: insightsData, isLoading, isFetching } = useQuery({
+    const { data: insightsData, isLoading } = useQuery({
         queryKey: ['aiInsights'],
         queryFn: getAIInsights,
         enabled: isOpen && isPro,

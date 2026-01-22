@@ -109,7 +109,7 @@ export default function Dashboard() {
         setExporting(true);
         try {
             const scores = scoreData?.data || {};
-            const prStats = prStatsData?.data || {};
+            const prStats = (prStatsData?.data || {}) as { prs_merged?: number; prs_opened?: number; code_reviews?: number; issues_opened?: number };
 
             const exportData = {
                 exportedAt: new Date().toISOString(),

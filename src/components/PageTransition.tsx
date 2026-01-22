@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 
 interface PageTransitionProps {
@@ -14,7 +14,7 @@ const variants = {
         scale: 1,
         transition: {
             duration: 0.4,
-            ease: [0.61, 1, 0.88, 1], // Custom ease
+            ease: [0.61, 1, 0.88, 1] as [number, number, number, number],
             staggerChildren: 0.1
         }
     },
@@ -24,7 +24,7 @@ const variants = {
         scale: 0.98,
         transition: {
             duration: 0.3,
-            ease: [0.61, 1, 0.88, 1]
+            ease: [0.61, 1, 0.88, 1] as [number, number, number, number]
         }
     }
 };

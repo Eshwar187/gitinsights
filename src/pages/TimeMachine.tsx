@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardTitle } from "../components/ui/Card";
+import { Card, CardContent } from "../components/ui/Card";
 import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Clock, Code2, TrendingUp, Calendar, Rocket, Milestone } from "lucide-react";
+import { Clock, Code2, TrendingUp, Rocket, Milestone } from "lucide-react";
 import { useSubscription } from "../hooks/useSubscription";
 import { UpgradePrompt } from "../components/UpgradePrompt";
 
@@ -96,7 +96,7 @@ export default function TimeMachine() {
 
                 {/* Milestones */}
                 <div className="space-y-8">
-                    {milestones.map((milestone, index) => (
+                    {milestones.map((milestone) => (
                         <div key={milestone.year} className="relative flex gap-6 items-start">
                             {/* Year marker */}
                             <div className={`relative z-10 w-16 h-16 rounded-full bg-gradient-to-br ${milestone.color} flex items-center justify-center text-white font-bold shadow-lg`}>

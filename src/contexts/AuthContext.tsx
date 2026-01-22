@@ -19,6 +19,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     loading: boolean;
     login: (token: string) => Promise<void>;
+    loginWithUsername: (username: string) => Promise<void>;
     logout: () => void;
     refreshUser: () => Promise<void>;
 }
@@ -41,8 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 return response.data.user;
             }
             return null;
-        } catch (error) {
-            console.error('Failed to fetch user from database:', error);
+        } catch {
             return null;
         }
     };
@@ -89,11 +89,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } else {
                 throw new Error('Failed to fetch user data');
             }
-        } catch (error: any) {
+        } catch {
             localStorage.removeItem('token');
             setToken(null);
             setUser(null);
             toast.error('Login failed. Please try again.');
+            throw new Error('Login failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Login with username (for returning users)
+    const loginWithUsername = async (username: string) => {
+        try {
+            setLoading(true);
+
+            // Call login by username API
+            const response = await api.post('/api/auth/login-username', { username });
+
+            if (response.data.success && response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                setToken(response.data.token);
+                setUser(response.data.user);
+                toast.success(`Welcome back, ${response.data.user.name || username}!`);
+            } else {
+                throw new Error(response.data.error || 'Login failed');
+            }
+        } catch (error: any) {
+            const message = error.response?.data?.error || 'Username not found. Please connect with GitHub first.';
+            toast.error(message);
             throw error;
         } finally {
             setLoading(false);
@@ -109,8 +134,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (userData) {
                 setUser(userData);
             }
-        } catch (error) {
-            console.error('Failed to refresh user:', error);
+        } catch {
+            // Silently fail refresh
         }
     };
 
@@ -130,6 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 isAuthenticated: !!user && !!token,
                 loading,
                 login,
+                loginWithUsername,
                 logout,
                 refreshUser,
             }}
