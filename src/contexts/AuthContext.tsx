@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setLoading(true);
 
             // Call login by username API
-            const response = await api.post('/api/auth/login-username', { username });
+            const response = await api.post('/api/auth/login-by-username', { username });
 
             if (response.data.success && response.data.token) {
                 localStorage.setItem('token', response.data.token);
