@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import { Card, CardContent } from "../components/ui/Card";
 import { getDeveloperScores } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { TrendingUp, TrendingDown, Minus, Trophy, Users, BarChart3, Target } from "lucide-react";

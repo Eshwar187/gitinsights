@@ -14,6 +14,7 @@ router.get('/languages', analyticsController.getUserLanguageStats);
 router.get('/heatmap', analyticsController.getUserHeatmap);
 router.get('/badges', analyticsController.getUserBadges);
 router.get('/ai-insights', checkFeatureAccess('ai_insights'), analyticsController.getUserAIInsights);
+router.post('/ai-insights', checkFeatureAccess('ai_insights'), trackUsage('ai'), analyticsController.regenerateUserAIInsights);
 
 // Account-specific routes (original)
 router.get('/accounts/:accountId/scores', analyticsController.getDeveloperScores);

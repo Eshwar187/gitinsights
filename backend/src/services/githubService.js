@@ -261,6 +261,7 @@ export const fetchPullRequests = async (accessToken, username) => {
     try {
         const client = createGitHubClient(accessToken);
 
+        // Fetch all PRs authored by this user
         const { data } = await retryRequest(() =>
             client.get('/search/issues', {
                 params: {
@@ -272,15 +273,28 @@ export const fetchPullRequests = async (accessToken, username) => {
             })
         );
 
-        return data.items.map(pr => ({
+        logger.info(`Fetched ${data.items?.length || 0} PRs for user ${username}`);
+
+        // For merged status, we check if the PR is closed
+        // The search API includes pull_request.merged_at for merged PRs
+        const pullRequests = data.items.map(pr => ({
             id: pr.id,
             title: pr.title,
             state: pr.state,
             created_at: pr.created_at,
             closed_at: pr.closed_at,
-            merged_at: pr.pull_request?.merged_at,
+            // GitHub search API includes this for merged PRs
+            merged_at: pr.pull_request?.merged_at || null,
+            // A PR is "merged" if it's closed AND has merged_at, OR if state includes "merged"
+            is_merged: !!(pr.pull_request?.merged_at),
             repository: pr.repository_url.split('/').slice(-2).join('/')
         }));
+
+        // Log merge stats for debugging
+        const mergedCount = pullRequests.filter(pr => pr.is_merged).length;
+        logger.info(`PR Stats for ${username}: ${pullRequests.length} total, ${mergedCount} merged`);
+
+        return pullRequests;
     } catch (error) {
         logger.error('Failed to fetch pull requests:', error);
         return [];

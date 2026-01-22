@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import { Card, CardContent, CardTitle } from "../components/ui/Card";
 import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";

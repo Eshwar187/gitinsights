@@ -362,8 +362,35 @@ export const getUserAIInsights = asyncHandler(async (req, res) => {
         .eq('github_account_id', account.id)
         .single();
 
+    // Transform the data to match frontend expectations
+    const insights = analytics ? {
+        summary: analytics.profile_summary,
+        strengths: analytics.strengths || [],
+        recommendations: analytics.recommendations || []
+    } : null;
+
     res.json({
         success: true,
-        data: analytics || {}
+        data: insights
     });
 });
+
+/**
+ * Regenerate AI insights for logged-in user - Uses Hugging Face AI
+ */
+export const regenerateUserAIInsights = asyncHandler(async (req, res) => {
+    const account = await getUserGitHubAccount(req.user.id);
+
+    // Use the AI service that calls Hugging Face
+    const insights = await aiService.generateAllInsights(account.id);
+
+    res.json({
+        success: true,
+        data: {
+            summary: insights.summary,
+            strengths: insights.strengths,
+            recommendations: insights.recommendations
+        }
+    });
+});
+

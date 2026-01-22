@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
-import { Badge } from "../components/ui/Badge";
+import { Card, CardContent } from "../components/ui/Card";
+
 import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Trophy, Lock, CheckCircle, Flame, Star, Code2, Moon, Zap, Users, GitFork, Calendar, TrendingUp } from "lucide-react";
+import { Trophy, Lock, CheckCircle, Flame, Star, Code2, Zap, GitFork, Calendar, TrendingUp } from "lucide-react";
 import { useSubscription } from "../hooks/useSubscription";
 import { UpgradePrompt } from "../components/UpgradePrompt";
 

@@ -13,7 +13,7 @@ export function DeveloperScore() {
 
     if (isLoading) {
         return (
-            <Card className="col-span-3 lg:col-span-1 bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
+            <Card className="h-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
                 <CardContent className="flex items-center justify-center h-full min-h-[200px]">
                     <LoadingSpinner size="sm" />
                 </CardContent>
@@ -29,7 +29,7 @@ export function DeveloperScore() {
     const rank = score.rank || 'N/A';
 
     return (
-        <Card className="col-span-3 lg:col-span-1 bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
+        <Card className="h-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-blue-100">Dev Score</CardTitle>
                 <Trophy className="h-4 w-4 text-yellow-300" />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "../components/ui/Button";
-import { Download, RefreshCw, Sparkles, Lock } from "lucide-react";
+import { Download, RefreshCw, Sparkles, Lock, Crown } from "lucide-react";
 import { StatsCards } from "../components/dashboard/StatsCards";
 import { ContributionHeatmap } from "../components/charts/ContributionHeatmap";
 import { TopLanguages } from "../components/charts/TopLanguages";
@@ -10,18 +10,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card"
 import { AIInsightsModal } from "../components/modals/AIInsightsModal";
 import { syncGitHubData } from "../services/githubService";
 import { toast } from "react-hot-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useSubscription } from "../hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
+import { getDeveloperScores, getPRStats } from "../services/analyticsService";
 
 export default function Dashboard() {
     const [showAI, setShowAI] = useState(false);
     const [syncing, setSyncing] = useState(false);
     const [syncLimitReached, setSyncLimitReached] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const queryClient = useQueryClient();
     const hasSynced = useRef(false);
     const { access, tier } = useSubscription();
     const navigate = useNavigate();
+    const isPremium = tier === 'premium';
+
+    // Fetch data for export
+    const { data: scoreData } = useQuery({
+        queryKey: ['developerScore'],
+        queryFn: getDeveloperScores
+    });
+
+    const { data: prStatsData } = useQuery({
+        queryKey: ['prStats'],
+        queryFn: getPRStats,
+        enabled: isPremium
+    });
 
     // Auto-sync on first load
     useEffect(() => {
@@ -84,6 +99,58 @@ export default function Dashboard() {
         }
     };
 
+    // Export function - Premium only
+    const handleExport = async () => {
+        if (!isPremium) {
+            toast.error("Export is a Premium-only feature. Upgrade to access!");
+            return;
+        }
+
+        setExporting(true);
+        try {
+            const scores = scoreData?.data || {};
+            const prStats = prStatsData?.data || {};
+
+            const exportData = {
+                exportedAt: new Date().toISOString(),
+                profile: {
+                    totalCommits: scores.total_commits || 0,
+                    totalRepos: scores.total_repos || 0,
+                    totalStars: scores.total_stars || 0,
+                    totalForks: scores.total_forks || 0,
+                    overallScore: scores.overall_score || 0,
+                    rank: scores.rank || 'N/A',
+                    currentStreak: scores.current_streak || 0,
+                    longestStreak: scores.longest_streak || 0,
+                    activeDays: scores.active_days || 0
+                },
+                prStats: {
+                    prsMerged: prStats.prs_merged || 0,
+                    prsOpened: prStats.prs_opened || 0,
+                    codeReviews: prStats.code_reviews || 0,
+                    issuesOpened: prStats.issues_opened || 0
+                }
+            };
+
+            // Create and download JSON file
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gitinsights-export-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            toast.success("Data exported successfully!");
+        } catch (error) {
+            toast.error("Failed to export data");
+        } finally {
+            setExporting(false);
+        }
+    };
+
     // Get sync limit display
     const syncLimit = access.syncsPerDay;
     const syncLimitText = syncLimit === Infinity ? "∞" : syncLimit;
@@ -101,10 +168,29 @@ export default function Dashboard() {
                         <Sparkles className="mr-2 h-4 w-4 text-purple-500" />
                         AI Insights
                     </Button>
-                    <Button variant="outline" size="sm">
-                        <Download className="mr-2 h-4 w-4" />
-                        Export
-                    </Button>
+                    <div className="relative">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleExport}
+                            disabled={exporting || !isPremium}
+                            className={!isPremium ? "opacity-60" : ""}
+                        >
+                            {exporting ? (
+                                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                            ) : !isPremium ? (
+                                <Lock className="mr-2 h-4 w-4" />
+                            ) : (
+                                <Download className="mr-2 h-4 w-4" />
+                            )}
+                            Export
+                        </Button>
+                        {!isPremium && (
+                            <span className="absolute -top-2 -right-2 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-white">
+                                <Crown className="h-2.5 w-2.5" />
+                            </span>
+                        )}
+                    </div>
                     <div className="relative">
                         <Button
                             size="sm"
@@ -121,12 +207,12 @@ export default function Dashboard() {
                         </Button>
                         {/* Sync limit badge */}
                         <span className={`absolute -top-2 -right-2 px-1.5 py-0.5 text-[10px] font-bold rounded-full ${syncLimitReached
-                                ? 'bg-red-500 text-white'
-                                : tier === 'premium'
-                                    ? 'bg-amber-500 text-white'
-                                    : tier === 'pro'
-                                        ? 'bg-purple-500 text-white'
-                                        : 'bg-slate-500 text-white'
+                            ? 'bg-red-500 text-white'
+                            : tier === 'premium'
+                                ? 'bg-amber-500 text-white'
+                                : tier === 'pro'
+                                    ? 'bg-purple-500 text-white'
+                                    : 'bg-slate-500 text-white'
                             }`}>
                             {syncLimitText}/day
                         </span>

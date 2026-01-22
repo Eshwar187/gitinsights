@@ -23,7 +23,7 @@ export function TopLanguages() {
 
     if (isLoading) {
         return (
-            <Card className="col-span-3 lg:col-span-1">
+            <Card className="h-full">
                 <CardHeader>
                     <CardTitle className="text-sm font-medium">Top Languages</CardTitle>
                 </CardHeader>
@@ -50,7 +50,7 @@ export function TopLanguages() {
     console.log('TopLanguages Chart Data:', chartData);
 
     return (
-        <Card className="col-span-3 lg:col-span-1">
+        <Card className="h-full">
             <CardHeader>
                 <CardTitle className="text-sm font-medium">Top Languages</CardTitle>
             </CardHeader>
@@ -60,7 +60,7 @@ export function TopLanguages() {
                         No language data available
                     </div>
                 ) : (
-                    <div className="h-[200px] w-full">
+                    <div className="h-[200px] w-full min-w-[200px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -72,7 +72,7 @@ export function TopLanguages() {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    {chartData.map((entry, index) => (
+                                    {chartData.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>

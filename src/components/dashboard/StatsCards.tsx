@@ -6,7 +6,7 @@ import LoadingSpinner from "../LoadingSpinner";
 import { useSubscription } from "../../hooks/useSubscription";
 
 export function StatsCards() {
-    const { tier, access } = useSubscription();
+    const { tier } = useSubscription();
     const isPremium = tier === 'pro' || tier === 'premium';
 
     const { data: scoreData, isLoading, error } = useQuery({
@@ -96,11 +96,9 @@ export function StatsCards() {
         },
     ] : [];
 
-    const allStats = [...baseStats, ...premiumStats];
-
     return (
         <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                 {baseStats.map((stat) => (
                     <Card key={stat.title}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

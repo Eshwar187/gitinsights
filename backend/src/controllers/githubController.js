@@ -284,9 +284,11 @@ export const syncData = asyncHandler(async (req, res) => {
             await analyticsService.aggregateLanguageStats(account.id);
             await analyticsService.assignBadges(account.id);
 
-            // Calculate PR stats
-            const prsMerged = pullRequests.filter(pr => pr.merged_at).length;
+            // Calculate PR stats - use is_merged flag from fetchPullRequests
+            const prsMerged = pullRequests.filter(pr => pr.is_merged || pr.merged_at).length;
             const prsOpened = pullRequests.length;
+
+            logger.info(`PR Stats to save: ${prsMerged} merged, ${prsOpened} opened, ${codeReviewsCount} reviews`);
 
             // Update sync status AND persist PR/Review stats
             await supabaseAdmin
@@ -360,7 +362,7 @@ export const syncData = asyncHandler(async (req, res) => {
 export const getAccounts = asyncHandler(async (req, res) => {
     const { data: accounts, error } = await supabaseAdmin
         .from('github_accounts')
-        .select('id, username, profile_data, last_synced_at, sync_status, created_at')
+        .select('id, username, profile_data, last_synced_at, sync_status, created_at, prs_merged, prs_opened, code_reviews, issues_opened')
         .eq('user_id', req.user.id)
         .is('deleted_at', null);
 

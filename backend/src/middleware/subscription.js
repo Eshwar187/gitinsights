@@ -45,30 +45,17 @@ export const checkFeatureAccess = (featureName) => {
                     break;
 
                 case 'ai_insights':
-                    if (plan.max_ai_insights_monthly === 0) {
+                    // Check user's subscription tier directly from the users table
+                    const userTier = req.user.subscription_tier || 'free';
+
+                    // AI Insights requires Pro or Premium
+                    if (userTier !== 'pro' && userTier !== 'premium') {
                         return next(new SubscriptionError('AI insights require a Pro or Premium subscription'));
                     }
 
-                    // Check monthly usage
-                    const currentMonth = new Date();
-                    currentMonth.setDate(1);
-                    currentMonth.setHours(0, 0, 0, 0);
-
-                    const { data: usage } = await supabaseAdmin
-                        .from('usage_tracking')
-                        .select('ai_insights_used')
-                        .eq('user_id', userId)
-                        .gte('period_start', currentMonth.toISOString())
-                        .single();
-
-                    const used = usage?.ai_insights_used || 0;
-                    if (used >= plan.max_ai_insights_monthly) {
-                        return next(new SubscriptionError(
-                            `You've reached your monthly AI insights limit (${plan.max_ai_insights_monthly}). Upgrade for more.`
-                        ));
-                    }
-
-                    req.aiInsightsUsed = used;
+                    // For now, skip the monthly limit check since we're using tier-based access
+                    // Premium gets unlimited, Pro gets 10/month (can be implemented later)
+                    req.aiInsightsUsed = 0;
                     break;
 
                 case 'api_access':

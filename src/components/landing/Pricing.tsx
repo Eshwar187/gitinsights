@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Check, Info, ShieldCheck } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 import { Button } from "../ui/Button";
 import { PaymentModal } from "../modals/PaymentModal";
-import { motion, AnimatePresence } from "framer-motion";
+
 
 const tiers = [
     {
@@ -107,13 +107,13 @@ export function Pricing() {
                     </div>
                 </div>
 
-                <div className="isolate mx-auto grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                <div className="isolate mx-auto grid max-w-md grid-cols-1 gap-6 sm:gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
                     {tiers.map((tier) => (
                         <div
                             key={tier.id}
-                            className={`rounded-2xl p-8 ring-1 transition-all ${tier.mostPopular
-                                    ? 'bg-[#161b22] ring-[#238636] shadow-xl shadow-green-900/20 scale-105 z-10'
-                                    : 'bg-[#0d1117] ring-[#30363d] hover:bg-[#161b22]'
+                            className={`rounded-2xl p-6 sm:p-8 ring-1 transition-all ${tier.mostPopular
+                                ? 'bg-[#161b22] ring-[#238636] shadow-xl shadow-green-900/20 lg:scale-105 z-10'
+                                : 'bg-[#0d1117] ring-[#30363d] hover:bg-[#161b22]'
                                 }`}
                         >
                             <div className="flex items-center justify-between gap-x-4">
@@ -140,8 +140,8 @@ export function Pricing() {
                                 onClick={() => setSelectedPlan(tier)}
                                 variant={tier.mostPopular ? "default" : "outline"}
                                 className={`mt-6 w-full ${tier.mostPopular
-                                        ? 'bg-[#238636] hover:bg-[#2ea043] text-white border-0'
-                                        : 'bg-transparent border-[#30363d] text-white hover:bg-[#21262d] hover:border-[#8b949e]'
+                                    ? 'bg-[#238636] hover:bg-[#2ea043] text-white border-0'
+                                    : 'bg-transparent border-[#30363d] text-white hover:bg-[#21262d] hover:border-[#8b949e]'
                                     }`}
                             >
                                 {tier.buttonText}

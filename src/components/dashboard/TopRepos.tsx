@@ -17,7 +17,7 @@ export function TopRepos() {
     console.log('TopRepos data:', reposData, 'error:', error);
 
     return (
-        <Card className="col-span-3 lg:col-span-2">
+        <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-sm font-medium">Top Repositories</CardTitle>
                 <Button variant="ghost" size="sm" className="text-xs">View All</Button>

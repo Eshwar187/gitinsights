@@ -1,6 +1,11 @@
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/Card";
-import { Brain, Sparkles, X } from "lucide-react";
+import { Brain, Sparkles, X, Lock, RefreshCw, Wand2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { generateAIInsights, getAIInsights } from "../../services/analyticsService";
+import { useSubscription } from "../../hooks/useSubscription";
+import LoadingSpinner from "../LoadingSpinner";
+import { toast } from "react-hot-toast";
 
 interface AIInsightsModalProps {
     isOpen: boolean;
@@ -8,7 +13,64 @@ interface AIInsightsModalProps {
 }
 
 export function AIInsightsModal({ isOpen, onClose }: AIInsightsModalProps) {
+    const { tier } = useSubscription();
+    const queryClient = useQueryClient();
+    const isPro = tier === 'pro' || tier === 'premium';
+
+    const { data: insightsData, isLoading, isFetching } = useQuery({
+        queryKey: ['aiInsights'],
+        queryFn: getAIInsights,
+        enabled: isOpen && isPro,
+        staleTime: 0, // Always refetch when modal opens
+    });
+
+    const regenerateMutation = useMutation({
+        mutationFn: generateAIInsights,
+        onSuccess: (data) => {
+            // Update the cache immediately with the new data
+            queryClient.setQueryData(['aiInsights'], data);
+            toast.success("AI analysis generated!");
+        },
+        onError: (error: any) => {
+            if (error.response?.status === 402) {
+                toast.error("AI Insights requires Pro subscription. Upgrade to access!");
+            } else {
+                console.error('AI Insights error:', error);
+                toast.error(error.response?.data?.message || "Failed to generate insights");
+            }
+        }
+    });
+
     if (!isOpen) return null;
+
+    // Show upgrade prompt for non-Pro users
+    if (!isPro) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                <Card className="w-full max-w-lg relative">
+                    <button onClick={onClose} className="absolute right-4 top-4 text-slate-500 hover:text-slate-900 dark:hover:text-slate-100">
+                        <X className="h-4 w-4" />
+                    </button>
+                    <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="p-4 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-4">
+                            <Lock className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">AI Insights is a Pro Feature</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mb-6 max-w-sm">
+                            Upgrade to Pro to unlock personalized AI-powered analysis of your GitHub profile.
+                        </p>
+                        <Button onClick={onClose}>
+                            Upgrade to Pro
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    const insights = insightsData?.data;
+    const hasInsights = insights?.summary || (insights?.strengths && insights.strengths.length > 0);
+    const isGenerating = regenerateMutation.isPending;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -28,35 +90,98 @@ export function AIInsightsModal({ isOpen, onClose }: AIInsightsModalProps) {
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4 text-yellow-500" /> Executive Summary</h4>
-                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                            You are a consistent contributor with a strong focus on TypeScript and Python. Your commit patterns suggest high productivity on weekends. Your repository documentation coverage is above average, but testing coverage could be improved in older projects.
-                        </p>
-                    </div>
-
-                    <div className="space-y-2">
-                        <h4 className="font-semibold">Strengths</h4>
-                        <div className="flex flex-wrap gap-2">
-                            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs rounded-full font-medium">Consistent Committer</span>
-                            <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full font-medium">Full Stack Versatility</span>
-                            <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-xs rounded-full font-medium">Clean Code</span>
+                    {/* Loading state - initial fetch */}
+                    {isLoading && !isGenerating && (
+                        <div className="flex flex-col items-center justify-center py-8">
+                            <LoadingSpinner size="lg" />
+                            <p className="text-sm text-slate-500 mt-2">Loading insights...</p>
                         </div>
-                    </div>
+                    )}
 
-                    <div className="space-y-2">
-                        <h4 className="font-semibold">Recommendations</h4>
-                        <ul className="list-disc pl-4 text-sm text-slate-600 dark:text-slate-300 space-y-1">
-                            <li>Consider adding more unit tests to 'awesome-project'.</li>
-                            <li>Your Python usage has dropped; try contributing to open source Python repos to maintain proficiency.</li>
-                            <li>Update the README for 'old-portfolio' to reflect its archived status.</li>
-                        </ul>
-                    </div>
+                    {/* Generating state */}
+                    {isGenerating && (
+                        <div className="flex flex-col items-center justify-center py-8">
+                            <div className="relative">
+                                <LoadingSpinner size="lg" />
+                                <Wand2 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-4 w-4 text-purple-500" />
+                            </div>
+                            <p className="text-sm text-slate-500 mt-4">Analyzing your GitHub profile...</p>
+                            <p className="text-xs text-slate-400">This may take a few seconds</p>
+                        </div>
+                    )}
 
-                    <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
-                        <span>3 of 10 monthly insights used</span>
-                        <Button size="sm" variant="outline">Regenerate Analysis</Button>
-                    </div>
+                    {/* No insights yet - show generate button */}
+                    {!isLoading && !isGenerating && !hasInsights && (
+                        <div className="text-center py-8">
+                            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                                <Sparkles className="h-8 w-8 text-purple-500" />
+                            </div>
+                            <h4 className="font-semibold mb-2">No AI Insights Yet</h4>
+                            <p className="text-slate-500 text-sm mb-6">
+                                Click the button below to generate personalized insights based on your GitHub activity.
+                            </p>
+                            <Button onClick={() => regenerateMutation.mutate()}>
+                                <Wand2 className="mr-2 h-4 w-4" />
+                                Generate AI Analysis
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Show insights */}
+                    {!isLoading && !isGenerating && hasInsights && (
+                        <>
+                            <div className="space-y-2">
+                                <h4 className="font-semibold flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-yellow-500" /> Executive Summary
+                                </h4>
+                                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    {insights.summary}
+                                </p>
+                            </div>
+
+                            {insights.strengths && insights.strengths.length > 0 && (
+                                <div className="space-y-2">
+                                    <h4 className="font-semibold">Strengths</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {insights.strengths.map((strength: string, index: number) => (
+                                            <span key={index} className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs rounded-full font-medium">
+                                                {strength}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {insights.recommendations && insights.recommendations.length > 0 && (
+                                <div className="space-y-2">
+                                    <h4 className="font-semibold">Recommendations</h4>
+                                    <ul className="list-disc pl-4 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                                        {insights.recommendations.map((rec: string, index: number) => (
+                                            <li key={index}>{rec}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Footer - always visible */}
+                    {!isLoading && (
+                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-xs text-slate-500">
+                            <span>{tier === 'premium' ? 'Unlimited insights' : 'Pro: 10 insights/month'}</span>
+                            {hasInsights && (
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => regenerateMutation.mutate()}
+                                    disabled={isGenerating}
+                                >
+                                    <RefreshCw className={`mr-2 h-3 w-3 ${isGenerating ? 'animate-spin' : ''}`} />
+                                    Regenerate
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
