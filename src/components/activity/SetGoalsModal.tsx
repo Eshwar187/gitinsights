@@ -41,7 +41,6 @@ export const SetGoalsModal: React.FC<SetGoalsModalProps> = ({ isOpen, onClose })
 
     const handleSave = () => {
         // In real app, save to backend
-        console.log("Saving goals:", goals);
         onClose();
     };
 
@@ -85,8 +84,8 @@ export const SetGoalsModal: React.FC<SetGoalsModalProps> = ({ isOpen, onClose })
                                 key={time}
                                 onClick={() => toggleTime(time)}
                                 className={`p-3 rounded-lg border-2 text-sm font-medium transition-colors ${goals.preferredTimes.includes(time)
-                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                                        : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                                     }`}
                             >
                                 {time}
@@ -104,8 +103,8 @@ export const SetGoalsModal: React.FC<SetGoalsModalProps> = ({ isOpen, onClose })
                                 key={lang}
                                 onClick={() => toggleLanguage(lang)}
                                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${goals.focusLanguages.includes(lang)
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
                                     }`}
                             >
                                 {lang}

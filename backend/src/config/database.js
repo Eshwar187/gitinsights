@@ -25,7 +25,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Test database connection
 export const testConnection = async () => {
     try {
-        const { data, error } = await supabaseAdmin
+        const { error } = await supabaseAdmin
             .from('users')
             .select('count')
             .limit(1);
@@ -34,10 +34,8 @@ export const testConnection = async () => {
             throw error;
         }
 
-        console.log('✅ Database connection successful');
         return true;
     } catch (error) {
-        console.error('❌ Database connection failed:', error.message);
         return false;
     }
 };

@@ -17,7 +17,6 @@ if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 32) {
 export const encrypt = (text) => {
     if (!text) return null;
     const encrypted = CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString();
-    console.log('[ENCRYPT] Input length:', text.length, 'Output length:', encrypted.length);
     return encrypted;
 };
 
@@ -30,7 +29,6 @@ export const decrypt = (encryptedText) => {
     if (!encryptedText) return null;
     const bytes = CryptoJS.AES.decrypt(encryptedText, ENCRYPTION_KEY);
     const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-    console.log('[DECRYPT] Input length:', encryptedText.length, 'Output length:', decrypted.length);
     return decrypted;
 };
 

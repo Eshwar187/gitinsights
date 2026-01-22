@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { useQuery } from "@tanstack/react-query";
 import { getLanguageStats } from "../../services/analyticsService";
@@ -13,6 +13,10 @@ const LANGUAGE_COLORS: Record<string, string> = {
     "Go": "#00ADD8",
     "C++": "#f34b7d",
     "Ruby": "#701516",
+    "C": "#555555",
+    "CSS": "#563d7c",
+    "HTML": "#e34c26",
+    "Shell": "#89e051",
 };
 
 export function TopLanguages() {
@@ -24,20 +28,17 @@ export function TopLanguages() {
     if (isLoading) {
         return (
             <Card className="h-full">
-                <CardHeader>
+                <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">Top Languages</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex items-center justify-center h-[200px]">
+                    <div className="flex items-center justify-center h-[250px]">
                         <LoadingSpinner size="sm" />
                     </div>
                 </CardContent>
             </Card>
         );
     }
-
-    // Debug: Log what we're receiving from API
-    console.log('TopLanguages API Response:', langData);
 
     const chartData = langData?.success && langData.data
         ? langData.data.map((lang: any) => ({
@@ -47,11 +48,9 @@ export function TopLanguages() {
         }))
         : [];
 
-    console.log('TopLanguages Chart Data:', chartData);
-
     return (
         <Card className="h-full">
-            <CardHeader>
+            <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Top Languages</CardTitle>
             </CardHeader>
             <CardContent>
@@ -60,28 +59,51 @@ export function TopLanguages() {
                         No language data available
                     </div>
                 ) : (
-                    <div className="h-[200px] w-full min-w-[200px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={chartData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {chartData.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <RechartsTooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Legend formatter={(value) => <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{value}</span>} />
-                            </PieChart>
-                        </ResponsiveContainer>
+                    <div className="flex flex-col items-center">
+                        {/* Chart Container */}
+                        <div className="h-[160px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={chartData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius="50%"
+                                        outerRadius="85%"
+                                        paddingAngle={3}
+                                        dataKey="value"
+                                    >
+                                        {chartData.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip
+                                        contentStyle={{
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                                            fontSize: '12px'
+                                        }}
+                                        formatter={(value) => [`${(value as number).toFixed(1)}%`, '']}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Custom Legend */}
+                        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mt-4 px-2">
+                            {chartData.map((entry: any, index: number) => (
+                                <div key={index} className="flex items-center gap-1.5">
+                                    <div
+                                        className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
+                                        style={{ backgroundColor: entry.color }}
+                                    />
+                                    <span className="text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                        {entry.name}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </CardContent>

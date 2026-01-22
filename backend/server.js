@@ -1,16 +1,12 @@
 import app from './src/app.js';
 import { createServer } from 'http';
-import { initializeWebSocket } from './src/sockets/collabSocket.js';
 import initializeJobs from './src/jobs/index.js';
 import logger from './src/utils/logger.js';
 
 const PORT = process.env.PORT || 5000;
 
-// Create HTTP server for WebSocket support
+// Create HTTP server
 const httpServer = createServer(app);
-
-// Initialize WebSocket
-const io = initializeWebSocket(httpServer);
 
 // Start server
 httpServer.listen(PORT, () => {

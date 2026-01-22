@@ -14,11 +14,8 @@ import githubRoutes from './routes/github.js';
 import analyticsRoutes from './routes/analytics.js';
 import portfolioRoutes from './routes/portfolio.js';
 import subscriptionRoutes from './routes/subscription.js';
-import codeReviewRoutes from './routes/codeReview.js';
 import activityRoutes from './routes/activity.js';
 import skillsRoutes from './routes/skills.js';
-import mentorRoutes from './routes/mentor.js';
-import collabRoutes from './routes/collab.js';
 import adminRoutes from './routes/admin.js';
 
 // Load environment variables
@@ -61,11 +58,8 @@ app.use('/api/github', githubRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/subscription', subscriptionRoutes);
-app.use('/api/code-review', codeReviewRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/skills', skillsRoutes);
-app.use('/api/mentor', mentorRoutes);
-app.use('/api/collab', collabRoutes);
 app.use('/api/admin', adminRoutes);
 
 // 404 handler
