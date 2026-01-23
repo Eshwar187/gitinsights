@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "../components/ui/Button";
-import { Download, RefreshCw, Sparkles, Lock, Crown } from "lucide-react";
+import { Download, RefreshCw, Sparkles, Lock, Crown, MessageSquare } from "lucide-react";
 import { StatsCards } from "../components/dashboard/StatsCards";
 import { ContributionHeatmap } from "../components/charts/ContributionHeatmap";
 import { TopLanguages } from "../components/charts/TopLanguages";
@@ -164,6 +164,16 @@ export default function Dashboard() {
                     <p className="text-slate-500 dark:text-slate-400">Welcome back, here's your activity overview.</p>
                 </div>
                 <div className="flex gap-2 items-center">
+                    <a
+                        href="https://docs.google.com/forms/d/e/1FAIpQLScYn_27bNSL_ndyvp619YbAN--rSPy5cm54o5AyepVFdIypHg/viewform"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Button variant="outline" size="sm" className="border-green-500/50 text-green-600 hover:bg-green-500/10">
+                            <MessageSquare className="mr-2 h-4 w-4" />
+                            Feedback
+                        </Button>
+                    </a>
                     <Button variant="outline" size="sm" onClick={() => setShowAI(true)}>
                         <Sparkles className="mr-2 h-4 w-4 text-purple-500" />
                         AI Insights
