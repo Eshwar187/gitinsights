@@ -1,7 +1,6 @@
 import supabaseAdmin from '../config/database.js';
 import { generateToken } from '../middleware/auth.js';
 import logger from '../utils/logger.js';
-import { NotFoundError } from '../utils/errors.js';
 import { asyncHandler } from '../utils/errors.js';
 
 /**
@@ -18,63 +17,85 @@ export const loginByUsername = asyncHandler(async (req, res) => {
         });
     }
 
+    logger.info(`Login attempt for username: ${username}`);
+
     try {
-        // Find user by GitHub username (case-insensitive)
-        const { data: githubAccount, error } = await supabaseAdmin
-            .from('github_accounts')
-            .select('*, user:users!github_accounts_user_id_fkey(*)')
-            .ilike('username', username)
+        // First, find the user directly by github_username in users table
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('*')
+            .ilike('github_username', username)
             .single();
 
-        console.log('Login by username lookup:', { username, found: !!githubAccount, error });
+        logger.info(`User lookup result: found=${!!user}, error=${userError?.message || 'none'}`);
 
-        if (!githubAccount) {
-            throw new NotFoundError('User not found. Please connect with GitHub first.');
+        if (userError || !user) {
+            // Try searching in github_accounts as fallback
+            const { data: githubAccount, error: ghError } = await supabaseAdmin
+                .from('github_accounts')
+                .select('user_id, username, avatar_url')
+                .ilike('username', username)
+                .single();
+
+            logger.info(`GitHub account lookup: found=${!!githubAccount}, error=${ghError?.message || 'none'}`);
+
+            if (ghError || !githubAccount) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Username not found. Please connect with GitHub first.'
+                });
+            }
+
+            // Get user by ID from github_accounts
+            const { data: userById } = await supabaseAdmin
+                .from('users')
+                .select('*')
+                .eq('id', githubAccount.user_id)
+                .single();
+
+            if (!userById) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'User account not found'
+                });
+            }
+
+            // Generate token and return
+            const token = generateToken(userById.id);
+
+            return res.json({
+                success: true,
+                token,
+                user: {
+                    id: userById.id,
+                    name: userById.name,
+                    email: userById.email,
+                    github_username: githubAccount.username,
+                    avatar_url: githubAccount.avatar_url || userById.avatar_url,
+                    subscription_tier: userById.subscription_tier || 'free'
+                }
+            });
         }
 
-        const user = githubAccount.user;
-
-        if (!user) {
-            throw new NotFoundError('User account not found');
-        }
-
-        // Get user's active subscription
-        const { data: subscription } = await supabaseAdmin
-            .from('user_subscriptions')
-            .select('*, plan:subscription_plans(*)')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .single();
-
-        // Generate JWT token
+        // User found directly - generate token
         const token = generateToken(user.id);
 
         logger.info(`User logged in by username: ${username}`);
 
         res.json({
             success: true,
-            data: {
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    github_username: username,
-                    avatar_url: githubAccount.avatar_url,
-                    subscription_tier: subscription?.plan?.name || 'free'
-                },
-                token
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                github_username: user.github_username,
+                avatar_url: user.avatar_url,
+                subscription_tier: user.subscription_tier || 'free'
             }
         });
     } catch (error) {
         logger.error('Login by username failed:', error);
-
-        if (error instanceof NotFoundError) {
-            return res.status(404).json({
-                success: false,
-                error: error.message
-            });
-        }
-
         res.status(500).json({
             success: false,
             error: 'Login failed. Please try again.'
