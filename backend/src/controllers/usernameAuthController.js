@@ -19,12 +19,14 @@ export const loginByUsername = asyncHandler(async (req, res) => {
     }
 
     try {
-        // Find user by GitHub username
-        const { data: githubAccount } = await supabaseAdmin
+        // Find user by GitHub username (case-insensitive)
+        const { data: githubAccount, error } = await supabaseAdmin
             .from('github_accounts')
             .select('*, user:users!github_accounts_user_id_fkey(*)')
-            .eq('username', username)
+            .ilike('username', username)
             .single();
+
+        console.log('Login by username lookup:', { username, found: !!githubAccount, error });
 
         if (!githubAccount) {
             throw new NotFoundError('User not found. Please connect with GitHub first.');
