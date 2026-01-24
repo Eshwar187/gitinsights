@@ -64,6 +64,13 @@ export default function AdminDashboard() {
                 setStats(data.stats);
                 setUsers(data.users || []);
             }
+
+            // Fetch maintenance mode status
+            const maintenanceResponse = await fetch(`${API_URL}/api/admin/maintenance`);
+            const maintenanceData = await maintenanceResponse.json();
+            if (maintenanceData.success) {
+                setMaintenanceMode(maintenanceData.maintenanceMode);
+            }
         } catch (error) {
             console.error('Failed to fetch admin data:', error);
         }
@@ -433,9 +440,28 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                     <button
-                                        onClick={() => {
-                                            setMaintenanceMode(!maintenanceMode);
-                                            toast.success(maintenanceMode ? 'Maintenance mode disabled' : 'Maintenance mode enabled');
+                                        onClick={async () => {
+                                            const newMode = !maintenanceMode;
+                                            try {
+                                                const token = localStorage.getItem('adminToken');
+                                                const response = await fetch(`${API_URL}/api/admin/maintenance`, {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'Authorization': `Bearer ${token}`
+                                                    },
+                                                    body: JSON.stringify({ enabled: newMode })
+                                                });
+                                                const data = await response.json();
+                                                if (data.success) {
+                                                    setMaintenanceMode(data.maintenanceMode);
+                                                    toast.success(data.message);
+                                                } else {
+                                                    toast.error('Failed to toggle maintenance mode');
+                                                }
+                                            } catch (error) {
+                                                toast.error('Failed to toggle maintenance mode');
+                                            }
                                         }}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${maintenanceMode
                                             ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'

@@ -152,4 +152,58 @@ router.delete('/delete-user/:userId', verifyAdmin, asyncHandler(async (req, res)
     });
 }));
 
+// In-memory maintenance mode state (in production, use database or Redis)
+let maintenanceMode = false;
+
+/**
+ * Get maintenance mode status
+ */
+router.get('/maintenance', asyncHandler(async (req, res) => {
+    res.json({
+        success: true,
+        maintenanceMode
+    });
+}));
+
+/**
+ * Toggle maintenance mode (admin only)
+ */
+router.post('/maintenance', verifyAdmin, asyncHandler(async (req, res) => {
+    const { enabled } = req.body;
+    maintenanceMode = enabled === true;
+
+    console.log(`Maintenance mode ${maintenanceMode ? 'ENABLED' : 'DISABLED'} by admin`);
+
+    res.json({
+        success: true,
+        maintenanceMode,
+        message: `Maintenance mode ${maintenanceMode ? 'enabled' : 'disabled'}`
+    });
+}));
+
+/**
+ * Middleware to check maintenance mode (export for use in other routes)
+ */
+export const checkMaintenance = (req, res, next) => {
+    // Allow admin routes
+    if (req.path.startsWith('/api/admin')) {
+        return next();
+    }
+
+    // Allow maintenance status check
+    if (req.path === '/api/admin/maintenance') {
+        return next();
+    }
+
+    if (maintenanceMode) {
+        return res.status(503).json({
+            success: false,
+            maintenance: true,
+            message: 'System is under maintenance. Please try again later.'
+        });
+    }
+
+    next();
+};
+
 export default router;

@@ -29,6 +29,7 @@ import ContactUs from "./pages/ContactUs";
 import Documentation from "./pages/Documentation";
 import AdminLogin from "./pages/Admin/AdminLogin";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import MaintenanceWrapper from "./components/MaintenanceWrapper";
 import { Toaster } from "react-hot-toast";
 
 // Create React Query client
@@ -48,52 +49,54 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Public Routes */}
-              <Route element={<PublicLayout />}>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/auth/login" element={<Login />} />
-                <Route path="/auth/callback" element={<AuthCallback />} />
-                <Route path="/p/:username" element={<PublicPortfolio />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsConditions />} />
-                <Route path="/refund" element={<RefundPolicy />} />
-                <Route path="/contact" element={<ContactUs />} />
-                <Route path="/docs" element={<Documentation />} />
-              </Route>
+          <MaintenanceWrapper>
+            <BrowserRouter>
+              <Routes>
+                {/* Public Routes */}
+                <Route element={<PublicLayout />}>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/auth/login" element={<Login />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/p/:username" element={<PublicPortfolio />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsConditions />} />
+                  <Route path="/refund" element={<RefundPolicy />} />
+                  <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/docs" element={<Documentation />} />
+                </Route>
 
-              {/* Admin Routes - Hidden from main navigation */}
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                {/* Admin Routes - Hidden from main navigation */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
-              {/* Protected Dashboard Routes */}
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <AppLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/activity" element={<Activity />} />
-                <Route path="/skills" element={<SkillTree />} />
-                <Route path="/repositories" element={<Repositories />} />
-                <Route path="/dna" element={<DeveloperDNA />} />
-                <Route path="/wrapped" element={<GitHubWrapped />} />
-                <Route path="/achievements" element={<Achievements />} />
-                <Route path="/compare" element={<CompareStats />} />
-                <Route path="/time-machine" element={<TimeMachine />} />
-                <Route path="/profile-card" element={<ProfileCard />} />
-                <Route path="/repo-health" element={<RepoHealth />} />
-                <Route path="/settings" element={<Settings />} />
-              </Route>
+                {/* Protected Dashboard Routes */}
+                <Route
+                  element={
+                    <ProtectedRoute>
+                      <AppLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/activity" element={<Activity />} />
+                  <Route path="/skills" element={<SkillTree />} />
+                  <Route path="/repositories" element={<Repositories />} />
+                  <Route path="/dna" element={<DeveloperDNA />} />
+                  <Route path="/wrapped" element={<GitHubWrapped />} />
+                  <Route path="/achievements" element={<Achievements />} />
+                  <Route path="/compare" element={<CompareStats />} />
+                  <Route path="/time-machine" element={<TimeMachine />} />
+                  <Route path="/profile-card" element={<ProfileCard />} />
+                  <Route path="/repo-health" element={<RepoHealth />} />
+                  <Route path="/settings" element={<Settings />} />
+                </Route>
 
-              {/* Redirects */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
+                {/* Redirects */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </BrowserRouter>
+          </MaintenanceWrapper>
           <Toaster
             position="top-right"
             toastOptions={{
