@@ -156,7 +156,7 @@ export default function ProfileCard() {
 
             {/* Card Preview */}
             <div className="flex justify-center">
-                <div ref={cardRef} className={`w-[480px] rounded-2xl p-6 shadow-2xl ${themes[selectedTheme]}`}>
+                <div ref={cardRef} data-card className={`w-[480px] rounded-2xl p-6 shadow-2xl ${themes[selectedTheme]}`}>
                     {/* Header */}
                     <div className="flex items-center gap-4 mb-6">
                         <img
@@ -175,25 +175,25 @@ export default function ProfileCard() {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-4 gap-4 mb-6">
-                        <div className="text-center">
-                            <div className="text-lg mb-1 opacity-80">&lt;/&gt;</div>
-                            <div className="text-lg font-bold">{scores.total_commits || 0}</div>
-                            <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Commits</div>
+                        <div className="flex flex-col items-center justify-start">
+                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>&lt;/&gt;</span>
+                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_commits || 0}</span>
+                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Commits</span>
                         </div>
-                        <div className="text-center">
-                            <div className="text-lg mb-1 opacity-80">⭐</div>
-                            <div className="text-lg font-bold">{scores.total_stars || 0}</div>
-                            <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Stars</div>
+                        <div className="flex flex-col items-center justify-start">
+                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>⭐</span>
+                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_stars || 0}</span>
+                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Stars</span>
                         </div>
-                        <div className="text-center">
-                            <div className="text-lg mb-1 opacity-80">📦</div>
-                            <div className="text-lg font-bold">{scores.total_repos || 0}</div>
-                            <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Repos</div>
+                        <div className="flex flex-col items-center justify-start">
+                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>📦</span>
+                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_repos || 0}</span>
+                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Repos</span>
                         </div>
-                        <div className="text-center">
-                            <div className="text-lg mb-1 opacity-80">🔥</div>
-                            <div className="text-lg font-bold">{scores.longest_streak || 0}</div>
-                            <div className={`text-xs ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`}>Streak</div>
+                        <div className="flex flex-col items-center justify-start">
+                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>🔥</span>
+                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.longest_streak || 0}</span>
+                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Streak</span>
                         </div>
                     </div>
 
