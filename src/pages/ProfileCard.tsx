@@ -166,19 +166,34 @@ export default function ProfileCard() {
             {/* Card Preview */}
             <div className="flex justify-center">
                 <div ref={cardRef} data-card className={`w-[480px] rounded-2xl p-6 shadow-2xl ${themes[selectedTheme]}`}>
-                    {/* Header */}
-                    <div className="flex items-center gap-4 mb-6">
-                        <img
-                            src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}&background=random`}
-                            alt=""
-                            className="w-16 h-16 rounded-full border-2 border-white/20"
-                            crossOrigin="anonymous"
-                        />
-                        <div>
-                            <h2 className="text-xl font-bold">{user?.name || 'Developer'}</h2>
-                            <p className={`text-sm ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-80'}`}>
+                    {/* Header - Using inline styles for html2canvas */}
+                    <div style={{
+                        display: 'table',
+                        width: '100%',
+                        marginBottom: '24px'
+                    }}>
+                        <div style={{ display: 'table-cell', verticalAlign: 'middle', width: '64px' }}>
+                            <img
+                                src={user?.avatar_url || `https://ui-avatars.com/api/?name=${user?.name}&background=random`}
+                                alt=""
+                                style={{
+                                    width: '64px',
+                                    height: '64px',
+                                    borderRadius: '50%',
+                                    border: '2px solid rgba(255,255,255,0.2)'
+                                }}
+                                crossOrigin="anonymous"
+                            />
+                        </div>
+                        <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingLeft: '16px' }}>
+                            <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '4px' }}>{user?.name || 'Developer'}</div>
+                            <div style={{
+                                fontSize: '14px',
+                                opacity: selectedTheme === 'light' ? 1 : 0.8,
+                                color: selectedTheme === 'light' ? '#64748b' : 'inherit'
+                            }}>
                                 @{user?.github_username || 'username'}
-                            </p>
+                            </div>
                         </div>
                     </div>
 
@@ -233,37 +248,79 @@ export default function ProfileCard() {
                         </div>
                     </div>
 
-                    {/* Languages */}
-                    <div className="flex justify-center gap-2 mb-4">
-                        {topLangs.map((lang: string) => (
+                    {/* Languages - Using inline styles for html2canvas */}
+                    <div style={{
+                        textAlign: 'center',
+                        marginBottom: '16px'
+                    }}>
+                        {topLangs.map((lang: string, index: number) => (
                             <span
                                 key={lang}
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${selectedTheme === 'light'
-                                    ? 'bg-slate-100 text-slate-700'
-                                    : 'bg-white/20'
-                                    }`}
+                                style={{
+                                    display: 'inline-block',
+                                    padding: '4px 12px',
+                                    borderRadius: '9999px',
+                                    fontSize: '12px',
+                                    fontWeight: 500,
+                                    marginRight: index < topLangs.length - 1 ? '8px' : '0',
+                                    backgroundColor: selectedTheme === 'light' ? '#f1f5f9' : 'rgba(255,255,255,0.2)',
+                                    color: selectedTheme === 'light' ? '#334155' : 'inherit'
+                                }}
                             >
                                 {lang}
                             </span>
                         ))}
                     </div>
 
-                    {/* Score Bar */}
-                    <div className={`rounded-lg p-3 ${selectedTheme === 'light' ? 'bg-slate-100' : 'bg-white/10'}`}>
-                        <div className="flex justify-between text-sm mb-1">
-                            <span>Developer Score</span>
-                            <span className="font-bold">{scores.overall_score || 0}/100</span>
+                    {/* Score Bar - Using inline styles for html2canvas */}
+                    <div style={{
+                        borderRadius: '8px',
+                        padding: '12px',
+                        backgroundColor: selectedTheme === 'light' ? '#f1f5f9' : 'rgba(255,255,255,0.1)'
+                    }}>
+                        <div style={{
+                            display: 'table',
+                            width: '100%',
+                            marginBottom: '4px'
+                        }}>
+                            <span style={{
+                                display: 'table-cell',
+                                textAlign: 'left',
+                                fontSize: '14px'
+                            }}>Developer Score</span>
+                            <span style={{
+                                display: 'table-cell',
+                                textAlign: 'right',
+                                fontSize: '14px',
+                                fontWeight: 'bold'
+                            }}>{scores.overall_score || 0}/100</span>
                         </div>
-                        <div className="w-full bg-white/20 rounded-full h-2">
+                        <div style={{
+                            width: '100%',
+                            backgroundColor: 'rgba(255,255,255,0.2)',
+                            borderRadius: '9999px',
+                            height: '8px',
+                            overflow: 'hidden'
+                        }}>
                             <div
-                                className="h-2 rounded-full bg-gradient-to-r from-green-400 to-blue-400"
-                                style={{ width: `${scores.overall_score || 0}%` }}
+                                style={{
+                                    height: '8px',
+                                    borderRadius: '9999px',
+                                    background: 'linear-gradient(to right, #4ade80, #60a5fa)',
+                                    width: `${scores.overall_score || 0}%`
+                                }}
                             />
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className={`text-center mt-4 text-xs ${selectedTheme === 'light' ? 'text-slate-400' : 'opacity-50'}`}>
+                    {/* Footer - Using inline styles for html2canvas */}
+                    <div style={{
+                        textAlign: 'center',
+                        marginTop: '16px',
+                        fontSize: '12px',
+                        opacity: selectedTheme === 'light' ? 1 : 0.5,
+                        color: selectedTheme === 'light' ? '#94a3b8' : 'inherit'
+                    }}>
                         Generated by GitInsights
                     </div>
                 </div>
