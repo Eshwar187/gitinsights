@@ -169,13 +169,13 @@ export default function Dashboard() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        <Button variant="outline" size="sm" className="border-green-500/50 text-green-600 hover:bg-green-500/10">
+                        <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-600 hover:bg-amber-500/10">
                             <MessageSquare className="mr-2 h-4 w-4" />
                             Feedback
                         </Button>
                     </a>
                     <Button variant="outline" size="sm" onClick={() => setShowAI(true)}>
-                        <Sparkles className="mr-2 h-4 w-4 text-purple-500" />
+                        <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
                         AI Insights
                     </Button>
                     <div className="relative">

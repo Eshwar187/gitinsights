@@ -55,7 +55,7 @@ export default function Documentation() {
         {
             name: "Pro",
             price: "₹199/month",
-            color: "text-blue-400",
+            color: "text-amber-400",
             features: [
                 "Everything in Free",
                 "AI-Powered Insights",
@@ -69,7 +69,7 @@ export default function Documentation() {
         {
             name: "Premium",
             price: "₹499/month",
-            color: "text-purple-400",
+            color: "text-rose-400",
             features: [
                 "Everything in Pro",
                 "Time Machine Feature",
@@ -84,18 +84,18 @@ export default function Documentation() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0d1117] text-white">
+        <div className="min-h-screen bg-[#0c1222] text-white">
             {/* Header */}
-            <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-50">
+            <header className="border-b border-gray-700/50 bg-[#111827] sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center font-bold text-white text-sm">
                             GI
                         </div>
                         <span className="text-xl font-bold text-white">GitInsights</span>
                     </Link>
                     <Link to="/">
-                        <Button variant="ghost" className="text-white hover:bg-[#21262d]">
+                        <Button variant="ghost" className="text-white hover:bg-gray-800/50">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Back to Home
                         </Button>
@@ -110,7 +110,7 @@ export default function Documentation() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-16"
                 >
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 mb-6">
                         <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white">Documentation</h1>
@@ -122,10 +122,10 @@ export default function Documentation() {
                 {/* Getting Started */}
                 <section className="mb-16">
                     <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
-                        <Rocket className="w-6 h-6 text-blue-400" />
+                        <Rocket className="w-6 h-6 text-amber-400" />
                         Getting Started
                     </h2>
-                    <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6 space-y-6">
+                    <div className="bg-[#111827] border border-gray-700/50 rounded-xl p-6 space-y-6">
                         <div className="flex items-start gap-4">
                             <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
                                 <CheckCircle className="w-5 h-5 text-green-400" />
