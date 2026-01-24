@@ -77,11 +77,20 @@ export default function ProfileCard() {
                 logging: false,
                 removeContainer: true,
                 onclone: (clonedDoc) => {
-                    // Force the cloned element to have no external margin/padding
-                    const clonedCard = clonedDoc.querySelector('[data-card]');
+                    // Force the cloned element styling for consistent rendering
+                    const clonedCard = clonedDoc.querySelector('[data-card]') as HTMLElement;
                     if (clonedCard) {
-                        (clonedCard as HTMLElement).style.margin = '0';
-                        (clonedCard as HTMLElement).style.boxShadow = 'none';
+                        clonedCard.style.margin = '0';
+                        clonedCard.style.boxShadow = 'none';
+                        clonedCard.style.transform = 'none';
+
+                        // Force all text elements to have consistent rendering
+                        const allElements = clonedCard.querySelectorAll('*');
+                        allElements.forEach((el) => {
+                            const htmlEl = el as HTMLElement;
+                            htmlEl.style.setProperty('-webkit-font-smoothing', 'antialiased');
+                            htmlEl.style.textRendering = 'geometricPrecision';
+                        });
                     }
                 }
             });
@@ -173,27 +182,54 @@ export default function ProfileCard() {
                         </div>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-4 gap-4 mb-6">
-                        <div className="flex flex-col items-center justify-start">
-                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>&lt;/&gt;</span>
-                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_commits || 0}</span>
-                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Commits</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-start">
-                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>⭐</span>
-                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_stars || 0}</span>
-                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Stars</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-start">
-                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>📦</span>
-                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.total_repos || 0}</span>
-                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Repos</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-start">
-                            <span className="text-lg leading-none" style={{ lineHeight: '1.2' }}>🔥</span>
-                            <span className="text-lg font-bold mt-1" style={{ lineHeight: '1.2' }}>{scores.longest_streak || 0}</span>
-                            <span className={`text-xs mt-1 ${selectedTheme === 'light' ? 'text-slate-500' : 'opacity-60'}`} style={{ lineHeight: '1.2' }}>Streak</span>
+                    {/* Stats Grid - Using inline styles for html2canvas compatibility */}
+                    <div style={{
+                        display: 'table',
+                        width: '100%',
+                        marginBottom: '24px',
+                        tableLayout: 'fixed'
+                    }}>
+                        <div style={{ display: 'table-row' }}>
+                            <div style={{
+                                display: 'table-cell',
+                                textAlign: 'center',
+                                verticalAlign: 'top',
+                                padding: '8px'
+                            }}>
+                                <div style={{ fontSize: '18px', marginBottom: '4px' }}>&lt;/&gt;</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>{scores.total_commits || 0}</div>
+                                <div style={{ fontSize: '12px', opacity: selectedTheme === 'light' ? 1 : 0.6, color: selectedTheme === 'light' ? '#64748b' : 'inherit' }}>Commits</div>
+                            </div>
+                            <div style={{
+                                display: 'table-cell',
+                                textAlign: 'center',
+                                verticalAlign: 'top',
+                                padding: '8px'
+                            }}>
+                                <div style={{ fontSize: '18px', marginBottom: '4px' }}>⭐</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>{scores.total_stars || 0}</div>
+                                <div style={{ fontSize: '12px', opacity: selectedTheme === 'light' ? 1 : 0.6, color: selectedTheme === 'light' ? '#64748b' : 'inherit' }}>Stars</div>
+                            </div>
+                            <div style={{
+                                display: 'table-cell',
+                                textAlign: 'center',
+                                verticalAlign: 'top',
+                                padding: '8px'
+                            }}>
+                                <div style={{ fontSize: '18px', marginBottom: '4px' }}>📦</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>{scores.total_repos || 0}</div>
+                                <div style={{ fontSize: '12px', opacity: selectedTheme === 'light' ? 1 : 0.6, color: selectedTheme === 'light' ? '#64748b' : 'inherit' }}>Repos</div>
+                            </div>
+                            <div style={{
+                                display: 'table-cell',
+                                textAlign: 'center',
+                                verticalAlign: 'top',
+                                padding: '8px'
+                            }}>
+                                <div style={{ fontSize: '18px', marginBottom: '4px' }}>🔥</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '4px' }}>{scores.longest_streak || 0}</div>
+                                <div style={{ fontSize: '12px', opacity: selectedTheme === 'light' ? 1 : 0.6, color: selectedTheme === 'light' ? '#64748b' : 'inherit' }}>Streak</div>
+                            </div>
                         </div>
                     </div>
 
