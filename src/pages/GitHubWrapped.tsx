@@ -4,7 +4,7 @@ import { Button } from "../components/ui/Button";
 import { getDeveloperScores } from "../services/analyticsService";
 import { getLanguageStats } from "../services/analyticsService";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { Download, Share2, Sparkles, Calendar, Code2, Flame, Star, GitFork } from "lucide-react";
+import { Download, Share2, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import toast from "react-hot-toast";
@@ -143,45 +143,45 @@ export default function GitHubWrapped() {
                     </div>
                 </Card>
 
-                {/* Stats Grid */}
+                {/* Stats Grid - Using emoji icons for html2canvas compatibility */}
                 <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white">
+                    <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white overflow-hidden">
                         <CardContent className="p-6 text-center">
-                            <Calendar className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📅</div>
                             <div className="text-3xl font-bold">{activeDays}</div>
                             <div className="text-sm opacity-80">Active Days</div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white">
+                    <Card className="bg-gradient-to-br from-orange-500 to-red-500 text-white overflow-hidden">
                         <CardContent className="p-6 text-center">
-                            <Flame className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🔥</div>
                             <div className="text-3xl font-bold">{longestStreak}</div>
                             <div className="text-sm opacity-80">Longest Streak</div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+                    <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white overflow-hidden">
                         <CardContent className="p-6 text-center">
-                            <Star className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>⭐</div>
                             <div className="text-3xl font-bold">{scores.total_stars || 0}</div>
                             <div className="text-sm opacity-80">Stars Earned</div>
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white">
+                    <Card className="bg-gradient-to-br from-purple-500 to-indigo-600 text-white overflow-hidden">
                         <CardContent className="p-6 text-center">
-                            <GitFork className="h-8 w-8 mx-auto mb-2 opacity-80" />
+                            <div style={{ fontSize: '32px', marginBottom: '8px' }}>📦</div>
                             <div className="text-3xl font-bold">{totalRepos}</div>
                             <div className="text-sm opacity-80">Repositories</div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Top Language Card */}
+                {/* Top Language Card - Using emoji icon for html2canvas */}
                 <Card className="overflow-hidden">
                     <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 text-white text-center">
-                        <Code2 className="h-12 w-12 mx-auto mb-4 text-yellow-400" />
+                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>💻</div>
                         <div className="text-lg opacity-80">Your Top Language</div>
                         <div className="text-4xl font-bold mt-2">{topLang}</div>
                         <div className="mt-4 text-sm opacity-60">

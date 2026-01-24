@@ -39,6 +39,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedTab, setSelectedTab] = useState<'overview' | 'users' | 'subscriptions' | 'settings'>('overview');
+    const [maintenanceMode, setMaintenanceMode] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -421,14 +422,27 @@ export default function AdminDashboard() {
 
                                 <div className="flex items-center justify-between p-4 bg-white/[0.03] rounded-xl border border-white/5">
                                     <div className="flex items-center gap-3">
-                                        <AlertTriangle className="h-5 w-5 text-orange-400" />
+                                        <AlertTriangle className={`h-5 w-5 ${maintenanceMode ? 'text-red-400' : 'text-orange-400'}`} />
                                         <div>
                                             <p className="text-white font-medium">Maintenance Mode</p>
-                                            <p className="text-sm text-slate-500">Temporarily disable user access for updates</p>
+                                            <p className="text-sm text-slate-500">
+                                                {maintenanceMode
+                                                    ? 'Users cannot access the app during maintenance'
+                                                    : 'Temporarily disable user access for updates'}
+                                            </p>
                                         </div>
                                     </div>
-                                    <button className="px-4 py-2 bg-slate-700 text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-600 transition-colors">
-                                        Activate
+                                    <button
+                                        onClick={() => {
+                                            setMaintenanceMode(!maintenanceMode);
+                                            toast.success(maintenanceMode ? 'Maintenance mode disabled' : 'Maintenance mode enabled');
+                                        }}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${maintenanceMode
+                                                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                            }`}
+                                    >
+                                        {maintenanceMode ? 'Deactivate' : 'Activate'}
                                     </button>
                                 </div>
                             </div>
