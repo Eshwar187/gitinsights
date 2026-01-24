@@ -73,7 +73,7 @@ export default function Login() {
         return (
             <div className="flex min-h-screen items-center justify-center">
                 <div className="text-center space-y-4">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-blue-600" />
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-amber-500" />
                     <p className="text-slate-600 dark:text-slate-400">
                         Completing GitHub authentication...
                     </p>
@@ -96,7 +96,7 @@ export default function Login() {
                     <div className="space-y-2">
                         <Button
                             variant="default"
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                             onClick={handleGitHubLogin}
                         >
                             <Github className="mr-2 h-5 w-5" />

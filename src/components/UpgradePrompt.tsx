@@ -16,7 +16,7 @@ export function UpgradePrompt({ feature, requiredTier }: UpgradePromptProps) {
         pro: {
             name: 'Pro',
             price: '₹199/mo',
-            color: 'from-purple-500 to-indigo-600',
+            color: 'from-amber-500 to-orange-500',
             icon: Zap,
             benefits: [
                 '🧬 Developer DNA Analysis',

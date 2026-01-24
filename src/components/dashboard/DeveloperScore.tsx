@@ -13,7 +13,7 @@ export function DeveloperScore() {
 
     if (isLoading) {
         return (
-            <Card className="h-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
+            <Card className="h-full bg-gradient-to-br from-amber-500 to-orange-500 text-white border-0 dark:from-amber-600 dark:to-orange-600">
                 <CardContent className="flex items-center justify-center h-full min-h-[200px]">
                     <LoadingSpinner size="sm" />
                 </CardContent>
@@ -29,9 +29,9 @@ export function DeveloperScore() {
     const rank = score.rank || 'N/A';
 
     return (
-        <Card className="h-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 dark:from-blue-900 dark:to-indigo-900">
+        <Card className="h-full bg-gradient-to-br from-amber-500 to-orange-500 text-white border-0 dark:from-amber-600 dark:to-orange-600">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-blue-100">Dev Score</CardTitle>
+                <CardTitle className="text-sm font-medium text-amber-100">Dev Score</CardTitle>
                 <Trophy className="h-4 w-4 text-yellow-300" />
             </CardHeader>
             <CardContent>
@@ -45,14 +45,14 @@ export function DeveloperScore() {
                     </p>
                 </div>
                 <div className="mt-4 space-y-2">
-                    <div className="text-xs flex justify-between text-blue-100">
+                    <div className="text-xs flex justify-between text-amber-100">
                         <span>Code Quality</span>
                         <span>{codeQuality.toFixed(1)}/10</span>
                     </div>
                     <div className="h-1.5 w-full bg-black/20 rounded-full overflow-hidden">
                         <div className="h-full bg-white/80 rounded-full" style={{ width: `${codeQuality * 10}%` }} />
                     </div>
-                    <div className="text-xs flex justify-between text-blue-100">
+                    <div className="text-xs flex justify-between text-amber-100">
                         <span>Consistency</span>
                         <span>{consistency.toFixed(1)}/10</span>
                     </div>

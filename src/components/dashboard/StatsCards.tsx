@@ -110,7 +110,7 @@ export function StatsCards() {
                         <CardContent>
                             <div className="text-2xl font-bold">{stat.value}</div>
                             <p className="text-xs text-muted-foreground text-slate-500">
-                                <span className="text-green-500 font-medium">{stat.change}</span> {stat.desc}
+                                <span className="text-amber-500 font-medium">{stat.change}</span> {stat.desc}
                             </p>
                         </CardContent>
                     </Card>
@@ -121,18 +121,18 @@ export function StatsCards() {
             {isPremium && premiumStats.length > 0 && (
                 <div className="grid gap-4 md:grid-cols-2">
                     {premiumStats.map((stat) => (
-                        <Card key={stat.title} className="border-purple-500/20 bg-purple-500/5">
+                        <Card key={stat.title} className="border-amber-500/20 bg-amber-500/5">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                                     {stat.title}
-                                    <span className="text-[10px] px-1.5 py-0.5 bg-purple-500 text-white rounded-full">PRO</span>
+                                    <span className="text-[10px] px-1.5 py-0.5 bg-amber-500 text-white rounded-full">PRO</span>
                                 </CardTitle>
-                                <stat.icon className="h-4 w-4 text-purple-500" />
+                                <stat.icon className="h-4 w-4 text-amber-500" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-purple-400">{stat.value}</div>
+                                <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
                                 <p className="text-xs text-muted-foreground text-slate-500">
-                                    <span className="text-purple-400 font-medium">{stat.change}</span> {stat.desc}
+                                    <span className="text-amber-400 font-medium">{stat.change}</span> {stat.desc}
                                 </p>
                             </CardContent>
                         </Card>

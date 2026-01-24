@@ -35,7 +35,7 @@ export function TopRepos() {
                             <div key={repo.id} className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4 last:pb-0 last:border-0">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <h4 className="text-sm font-semibold hover:text-blue-600 cursor-pointer">
+                                        <h4 className="text-sm font-semibold hover:text-amber-500 cursor-pointer">
                                             {repo.name}
                                         </h4>
                                         {repo.language && (

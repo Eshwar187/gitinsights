@@ -116,8 +116,8 @@ export default function Activity() {
                     <Card>
                         <CardContent className="pt-6">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                    <ActivityIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                <div className="p-3 bg-amber-100 dark:bg-amber-900 rounded-lg">
+                                    <ActivityIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-slate-500">Commits ({dateRange}d)</p>
