@@ -42,10 +42,10 @@ export default function MaintenancePage() {
                     <p className="text-xs text-slate-600">
                         Need urgent support? Contact{" "}
                         <a
-                            href="mailto:support@gitinsights.com"
+                            href="mailto:jeshwar.work@gmail.com"
                             className="text-amber-400 hover:underline"
                         >
-                            support@gitinsights.com
+                            jeshwar.work@gmail.com
                         </a>
                     </p>
                 </div>
